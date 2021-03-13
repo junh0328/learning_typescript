@@ -1,5 +1,12 @@
-function logName (name: string){
-  console.log(name);
+let student = {
+  name: 'Jake',
+  cours: 'Getting Started with TypeScript',
+  codingIQ: 80,
+  code: function(){
+    console.log('brain is working hard');
+  }
 }
 
-logName('준희');
+function carculateCodinIQ (lostPoints:any){
+  return 100 - lostPoints;
+}
