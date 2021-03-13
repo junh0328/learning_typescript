@@ -123,8 +123,101 @@ function getStudentDetails(
   age: number;
   gender: string;
   subject: string;
-  courseCompleted: Date;
+  courseCompleted: boolean;
 } {
   return null;
 }
 ```
+
+<hr/>
+
+## 인터페이스로 객체 구조 정의하기
+
+복잡해보이는 위의 구조를 인터페이스를 사용하여 분리해봅니다.
+
+```ts
+...
+interface Student {
+  studentID: number;
+  studentName: string;
+  age: number;
+  gender: string;
+  subject: string;
+  courseCompleted: boolean;
+}
+// 인터페이스를 통해 복잡해질 수 있는 코드의 반환타입을 위에서 선언하고, Student 키워드만 가져와 사용한다
+
+function getStudentDetails(studentID: number):Student
+{
+  return {
+    studentID: 12345,
+    studentName: 'Jenny Kim',
+    age: 21,
+    gender: 'female',
+    subject: 'JavaScript',
+    courseCompleted: true
+  };
+  // 위 코드에 리턴될 때는 인터페이스의 구조에 들어있는 프로퍼티들을 모두 가져야 한다.
+}
+
+```
+
+<p>추가적으로, 인터페이스 타입으로 가지는 값은 인터페이스의 구조를 그 값으로 가지도록 강제됩니다. 리턴되는 프로퍼티가 인터페이스에 존재하는 프로퍼티의 수와 다를 시에는 오류가 발생합니다.</p>
+
+> 반환값에 포함되어야만 한다는 오류
+
+<p>만일 인터페이스의 특정 프로퍼티를 리턴문에서 사용하지 않기 위해서는 프로퍼티 키에 ? 를 붙여줘야 한다.</p>
+
+```ts
+...
+interface Student {
+  studentID: number;
+  studentName: string;
+  age?: number;     // age에 (?)를 붙임으로 return 시에 age를 생략해도 코드에 문제가 발생하지 않는다.
+  gender: string;
+  subject: string;
+  courseCompleted: boolean;
+}
+
+function getStudentDetails(studentID: number):Student
+{
+  return {
+    studentID: 12345,
+    studentName: 'Jenny Kim',
+    gender: 'female',
+    subject: 'JavaScript',
+    courseCompleted: true
+  };
+}
+```
+
+### ts 코드의 재사용
+
+### Read Only 속성
+
+<p>Readonly가 붙은 인터페이스의 프로퍼티는 읽기전용 프로퍼티로 객체가 생성될 때 할당된 프로퍼티 값은 그 후에 바꿀 수 없다. </p>
+
+```ts
+interface Student {
+  readonly studentID: number;   // readonly 추가
+  studentName: string;
+  age?: number;
+  gender: string;
+  subject: string;
+  courseCompleted: boolean;
+  // addComment? (comment: string): string;
+  addComment?: (comment: string) => string;
+}
+
+...
+
+function saveStudentDetails(student: Student): void{
+  student.studentID = 12131414; // readonly로 작성했기 때문에 studentID 의 값을 바꿀 수 없다는 오류 출력
+}
+>>>
+Cannot assign to 'studentID' because it is a read-only property.
+
+```
+
+<p>인터페이스는 실제로 JS 코드로 변환될 때, 변환되어 .js 파일로 넘어가지 않는다. 타입스크립트 컴파일러가 인터페이스를 코드에서 지우기 때문이다. 즉, 인터페이스는 작성 중인 코드에 대한 더 많은 정보를 타입스크립트에게 제공하기 위해 존재한다는 것을 알아두어야 한다. </p>
+<p>타입스크립트에게 더 많은 정보를 제공할 수 록 컴파일 시에 우리가 만드는 오류를 더 많이 잡아줄 수 있기 때문이다.</p>

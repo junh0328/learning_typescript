@@ -5,10 +5,25 @@ var age = 21;
 var gender = 'female';
 var subject = 'JavaScript';
 var courseCompleted = false;
+var student1 = {
+    studentID: 123454321,
+    studentName: 'Janet Lee',
+    age: 30,
+    gender: 'male',
+    subject: 'Mongo DB',
+    courseCompleted: false
+};
+// 인터페이스를 통해 복잡해질 수 있는 코드의 반환타입을 위에서 선언하고, Student 키워드만 가져와 사용한다
 function getStudentDetails(studentID) {
-    return null;
+    return {
+        studentID: 12345,
+        studentName: 'Jenny Kim',
+        gender: 'female',
+        subject: 'JavaScript',
+        courseCompleted: true
+    };
 }
-// 함수가 아무것도 반환하지 않으면 함수의 반환 타입으로 void를 지정해준다.
-// getStudentDetails() 함수를 통해 우리는 객체 형식으로 반환을 하려고 :object라는 타입을 선언했다.
-// 하지만 오류가 발생한다. void 또는 any를 사용하라는 오류이다.
-// 이를 해결하기 위해서는 return 문에 null을 넣어준다.
+function saveStudentDetails(student) {
+    student.studentID = 12131414; // Student 인터페이스에서 readonly로 작성했기 때문에 studentID 의 값을 바꿀 수 없다는 오류 출력
+}
+saveStudentDetails(student1);
