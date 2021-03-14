@@ -1,3 +1,8 @@
+## 참고자료
+
+이 글을 '땅콩코딩'님의 타입스크립트 강의를 바탕으로 작성된 글입니다.<br/>
+<a href="https://www.youtube.com/channel/UCQrIKpEc3FFO1KJ5zkoIcYA" taget="_blank">타입스크립트 강의 바로가기</a>
+
 ## 사용한 extension
 
 - prettier
@@ -449,3 +454,201 @@ setItemPrice(50);
 ```
 
 <p>typeof 연산자를 사용하여 price 값이 number 일 때만 해당 코드가 작동하도록 합니다. 이를 타입 가드라고 합니다.</p>
+
+<hr/>
+
+## 함수 타이핑, 선택적 매개 변수와 기본 매개 변수
+
+이번에는 함수에 타입을 정의해주는 것을 배워보도록 하겠습니다. <br/>
+
+```js
+function sendGreeting(message, userName){
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello', 'Mark');
+```
+
+<br/>
+기본적으로 함수 선언식을 통해 매개변수를 받아 해당 매개변수를 출력하는 구조의 함수를 만들었고, 밑에서 파라미터(매개변수를) 넣어 함수를 호출하는 구조입니다.
+
+### 함수의 타입 명시
+
+타입스크립트에서 함수를 작성하기 위해서는 두 가지 작업이 필요합니다
+1. 함수의 반환 (return) 타입
+2. 함수의 매개변수(parameter) 타입
+
+ts 에서는 이 두 타입을 반드시 명시해주어야 합니다.
+
+### 함수의 반환 타입 명시
+
+```ts
+function 함수이름(매개변수1, 매개변수2): 함수의 반환 타입{
+  ...
+}
+```
+<br/>
+위의 코드와 같이 ts에서는 매개변수를 표시하는 소괄호 '()' 뒤에 ': 함수의 반환 타입'을 명시해주어야 합니다.
+
+```ts
+function sendGreeting(message, userName): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello', 'Mark');
+```
+
+<br/>
+위의 함수와 같이 반환되는(return) 값이 아무 것도 반환하지 않을 경우 :void, 를 통해 아무 것도 반환하지 않는다는 것을 적어줍니다.
+
+> <b>void</b> 타입은 함수의 반환 타입으로만 작성할 수 있습니다.
+
+```ts
+case 1: string 타입 반환
+
+function sendGreeting(message, userName): string{
+  return 'Hello, Mark';
+}
+
+/*
+다음과 같이 함수에 호출되어 반환되는(return) 값이 string 타입이라면 :string으로 타입을 적어줘야 합니다.
+*/
+```
+
+```ts
+case 2: 배열 타입 반환
+
+function sendGreeting(message, userName): string[]{
+  return ['Hello', 'Mark'];
+
+/*
+다음과 같이 함수에 호출되어 반환되는(return) 값이 string의 배열 타입이라면 :string[]으로 타입을 적어줘야 합니다.
+*/
+```
+
+### 함수의 매개변수 타입 명시
+
+```ts
+function sendGreeting(message : string, userName: string): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello', 'Mark');
+```
+
+<p>추가적으로 함수의 반환 타입과 더불어 매개변수(파라미터)의 타입 또한 적어주었습니다.</p>
+
+만약 반환 시에 매개변수 하나만 (Hello) 보내준다면 어떻게 될까요?
+
+```ts
+function sendGreeting(message : string, userName: string): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello');  // 함수에서 매개변수를 2개를 받는다고 했지만, 호출 시에 넣어준 매개변수가 한 개인 경우
+
+>>>
+/*
+  function.ts:1:41
+    1 function sendGreeting(message : string, userName: string): void{
+    An argument for 'userName' was not provided.
+*/
+```
+
+<p>이러한 오류 메세지가 나오는 이유는 타입스크립트에서는 함수에 정의된 모든 매개 변수가 함수에 필요하다고 가정하기 때문입니다. </p>
+
+```ts
+function sendGreeting(param1, param2):void{
+
+}
+
+sendGreeting(arg1, arg2);
+```
+
+<p>ts에서는 함수에 정의된 파라미터들과 함수를 호출할 때 보내주는 arguments들을 모두 비교 검사하기 때문에 두 수가 일치해야 합니다. 만일 매개 변수를 선택적으로 받고 싶다면, 이전 인터페이스 시간에 배웠던 <b>선택적 매개변수</b>를 사용해야 합니다. </p>
+
+```ts
+function sendGreeting(message : string, userName?: string): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello');
+```
+
+<p>파라미터 속성 뒤에 `?`를 붙이면 선택적 매개변수로 만들어줄 수 있습니다. 여기서 중요한 점은 여러 개의 파라미터를 받을 때 선택적 매개변수를 사용한다면, 해당 매개변수를 가장 뒤에 위치시켜야 한다는 것입니다. 만일 선택적 매개변수로 채택한 매개변수가 중간에 위치한다면 그 뒤에 있는 매개변수들까지 모두 선택적 매개변수로 인식되게 됩니다.</p>
+
+```ts
+case 2 : 잘못된 사용
+
+function 함수이름(param1:string, param2?:number, param3: string, ...): void{
+
+}
+
+
+
+/*
+param2 뒤에 있는 매개변수는 모두 선택적 매개변수로 인식되기 때문에 선택적 매개변수는 반드시 맨 뒤에 붙여줘야 합니다.
+*/
+case 2 : 올바른 사용
+
+function 함수이름(param1:string, param2:number, param3?: string): void{
+
+}
+```
+
+### default 매개변수
+
+지금 까지 만든 ts 파일을 컴파일하여 js 파일을 실행하면 `Hello, undefined` 가 출력됩니다.<br/>
+arguments로 필요한 파라미터를 모두 보내주지 않았기 때문입니다. 만약 undefined 대신 우리가 정한 값이 출력되도록 만들기 위해서는 어떻게 해야 할까요? <br/>
+<b>default 매개변수</b>를 사용하여 undefined 시에 출력될 값을 정해줄 수 있습니다.
+
+```ts
+case 1 : 일부 매개변수에 default 매개변수 선언
+function sendGreeting(message : string, userName = 'there'): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting('Hello');
+
+/*
+기존에 userName 매개변수에 지정한 타입을 지워주고 default 매개변수로 'there'를 주었습니다.
+이를 js 환경에서 실행하면 다음과 같습니다.
+*/
+
+>>>
+Hello, there
+```
+
+```ts
+case 2 : 모든 매개변수에 default 매개변수 선언
+function sendGreeting(message ='Hello', userName = 'there'): void{
+  console.log(`${message}, ${userName}`)
+}
+
+sendGreeting();
+sendGreeting('Good moring');
+sendGreeting('Good afternoon', 'Jenny');
+
+>>>
+Hello, there
+Good moring, there
+Good afternoon, Jenny
+```
+
+### arrow function으로 변환
+
+```ts
+case 1: 기존 코드
+function sendGreeting(message ='Hello', userName = 'there'): void{
+  console.log(`${message}, ${userName}`)
+}
+
+...
+
+case 2: 변환된 코드
+const sendGreeting = (message ='Hello', userName = 'there'): void => console.log(`${message}, ${userName}`);
+
+/*
+화살표 함수를 통해 더 간결한 표현이 가능합니다.
+*/
+```
