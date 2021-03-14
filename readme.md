@@ -751,3 +751,165 @@ employee1.printEmployeeDetails();
 <p>각 프로퍼티에 value를 선언해주었더니, 원하는 값을 얻을 수 있었습니다. 이 처럼 우리는 class 와 오브젝트의 관계를 가지는 객체지향 프로그래밍으로 더 효과적이고 가벼운 프로그래밍을 할 수 있습니다.</p>
 
 <hr/>
+
+## 생성자(Constructor), 접근 제한차(Access Modifiers), Getter와 Setter
+
+```ts
+class Employee {
+  fullName: string; 
+  perAge: number;
+  jobTitle: string; 
+  hourlyRate: number; 
+  workingHoursPerWeek: number; 
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+
+let employee1 = new Employee();
+employee1.fullName = '준모';
+employee1.jobTitle = '주니어 웹 개발자';
+employee1.hourlyRate = 40;
+employee1.workingHoursPerWeek = 35;
+employee1.printEmployeeDetails();
+```
+<p>위 코드는 OOP의 특징을 활용하여 <b>Employee</b> 클래스를 선언하고, 인스턴스로 하여금 해당 클래스의 메소드를 사용해 보았습니다. 하지만, 인스턴스의 프로퍼티 값을 위의 코드처럼 일일히 지정해주는 것은 하나의 인스턴스 생성에는 문제가 없지만, 다수의 인스턴스를 생성할 때는 코드의 양이 방대해지고 가독성이 떨어질 수 있습니다.</p>
+
+### 생성자(constructor)
+
+```ts
+class Employee {
+  fullName: string; 
+  perAge: number;
+  jobTitle: string; 
+  hourlyRate: number; 
+  workingHoursPerWeek: number; 
+
+  // 생성자 함수를 생성하여, 인스턴스 생성시에 각 프로퍼티에 접근하여 값을 할당해야하는 작업을 줄일 수 있었다.
+  constructor(fullName: string, perAge: number, jobTitle:string, hourlyRate: number, workingHoursPerWeek: number){
+    this.fullName = fullName;
+    this.perAge = perAge;
+    this.jobTitle = jobTitle;
+    this.hourlyRate = hourlyRate;
+    this.workingHoursPerWeek = workingHoursPerWeek;
+  }
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+
+let employee1 = new Employee('준모', 25, '주니어 웹 개발자', 40, 35);
+employee1.fullName = '민수';
+employee1.printEmployeeDetails();
+```
+
+<p>class에서 생성자를 만들어 주면 객체를 생성할 때 파라미터에 해당 프로퍼티의 타입에 맞춰 넣기만 해줘도 값이 포함되어 있는 인스턴스의 생성이 가능하다.</p>
+```ts
+employee1.fullName = '...'
+```
+<p>과 같이 하나하나 넣어주지 않아도 된다는 의미이다.</p>
+
+### Access Modifier (접근 제한자)
+
+접근 제한자는 클래스 속 멤버 변수(프로퍼티)와 메소드에 적용될 수 있는 키워드입니다.<br/>
+접근 제한자를 통해 클래스 외부로부터의 접근을 통제할 수 있습니다.
+
+|종류|기능|
+|:-:|:-:|
+|public| default 값, class 외부에서도 접근 가능|
+|private| class 내에서만 접근 가능, 클래스 외부에서 접근 불가능(비공개 멤버)|
+|protected|클래스 내부와 상속받은 자식 클래스에서 접근 가능|
+
+<p>java와 c#과 같은 다른 OOP 와는 다르게 자바스크립트에서는 public 클래스 사용시 public 멤버를 노출시키기 위해서 public 키워드를 명시할 필요가 없다.</p>
+
+<img src = "./image/private.png" alt="private"> <br/>
+
+<img src = "./image/private2.png" alt="private2"> <br/>
+
+<p>위의 이미지는 접근 제한자의 기능을 알아보기 위한 이미지이다. public 키워드를 따로 기입하지 않더라도 자동적으로 public으로 인식되며, private 키워드를 사용시 클래스 외부에서 만든 자식 일지라도 접근이 불가능하다. 또한 private 키워드를 사용시 해당 프로퍼티에 접근 조차 불가능하다.</p>
+
+<p>만약 접근을 하기 위해서는 어떻게 해야 할까?</p>
+
+### Getter & Setter
+
+<p>타입스크립트에서는 get 과 set 키워드를 사용하여 Getter 와 Setter를 선언합니다. get 메소드를 통해 private 키워드로 선언된 프로퍼티에 접근할 수 있으며, set 메소드를 통해 이 키워드에 선언된 프로퍼티 값을 재 선언할 수 있습니다.</p>
+
+```ts
+class Employee {
+  private _fullName: string; 
+  perAge: number;
+  jobTitle: string; 
+  hourlyRate: number; 
+  workingHoursPerWeek: number; 
+
+  constructor(fullName: string, perAge: number, jobTitle:string, hourlyRate: number, workingHoursPerWeek: number){
+    this._fullName = fullName;
+    this.perAge = perAge;
+    this.jobTitle = jobTitle;
+    this.hourlyRate = hourlyRate;
+    this.workingHoursPerWeek = workingHoursPerWeek;
+  }
+
+  get fullName (){
+    return this._fullName;      // private으로 선언된 Employee._fullName에 접근하기 위한 get() 메소드
+  }
+
+  set fullName (value : string) {
+    this._fullName = value;     // private으로 선언된 Employee._fullName에 값을 재할당 위한 set() 메소드
+  }
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this._fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+
+let employee1 = new Employee('준모', 25, '주니어 웹 개발자', 40, 35);
+console.log(employee1.fullName);
+employee1.fullName = '헨리'
+console.log(employee1.fullName);
+employee1.fullName = '민수';
+console.log(employee1.fullName);
+employee1.printEmployeeDetails();
+
+>>>
+준모
+헨리
+민수
+민수의 직업은 주니어 웹 개발자이고 일주일의 수입은 1400 달러 입니다.
+```
+
+<p> get() 함수와 set() 함수는 class 외부에서 호출되지만, 선언은 class 내부에서 해줍니다. 우리가 호출하고자 하는 프로퍼티에 접근하기 위해서 해당 프로퍼티의 이름으로 get 메소드를 만들어 줍니다. 이와 마찬가지로 set 메소드를 설정해줍니다. set() 메소드에는 타입선언과 함께 우리가 바꿔줄 파라미터도 넣어줘야 겠죠?</p>
+
+
+### Constructor의 매개변수에 Access Modifiers 직접 적용하기
+
+객체가 생성될 때, constructor의 매개변수(params)로 전달된 값은 객체의 프로퍼티 값으로 자동으로 그 값이 초기화되고 할당됩니다.<br/>
+위 설명을 더불어 바꾼 코드는 다음과 같습니다. <br/>
+
+```ts
+class Employee {
+
+  constructor(
+    private _fullName: string, 
+    private _perAge: number, 
+    private _jobTitle:string, 
+    private _hourlyRate: number, 
+    public workingHoursPerWeek: number){
+
+    }
+
+  get fullName (){
+    return this._fullName;
+  }
+
+  set fullName (value : string) {
+    this._fullName = value;
+  }
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this._fullName}의 직업은 ${this._jobTitle}이고 일주일의 수입은 ${this._hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+```
