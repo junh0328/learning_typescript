@@ -5,11 +5,16 @@ let gender: string = 'female';
 let subject: string = 'JavaScript';
 let courseCompleted: boolean = false;
 
+enum GenderType {
+  Male = 'male',
+  Female = 'female'
+}
+
 let student1 = {
   studentID: 123454321,
   studentName: 'Janet Lee',
   age: 30,
-  gender: 'male',
+  gender: GenderType.Male,
   subject: 'Mongo DB',
   courseCompleted: false
 }
@@ -18,7 +23,7 @@ interface Student {
   studentID: number;
   studentName: string;
   age?: number;
-  gender: string;
+  gender: GenderType;
   subject: string;
   courseCompleted: boolean;
   // addComment? (comment: string): string;
@@ -31,7 +36,7 @@ function getStudentDetails(studentID: number):Student
   return {
     studentID: 12345,
     studentName: 'Jenny Kim',
-    gender: 'female',
+    gender: GenderType.Female,
     subject: 'JavaScript',
     courseCompleted: true
   };

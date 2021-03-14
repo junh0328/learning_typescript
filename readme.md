@@ -219,5 +219,114 @@ Cannot assign to 'studentID' because it is a read-only property.
 
 ```
 
-<p>인터페이스는 실제로 JS 코드로 변환될 때, 변환되어 .js 파일로 넘어가지 않는다. 타입스크립트 컴파일러가 인터페이스를 코드에서 지우기 때문이다. 즉, 인터페이스는 작성 중인 코드에 대한 더 많은 정보를 타입스크립트에게 제공하기 위해 존재한다는 것을 알아두어야 한다. </p>
+<p>인터페이스는 실제로 JS 코드로 변환될 때, .js 파일로 넘어가지 않는다. 타입스크립트 컴파일러가 인터페이스를 코드에서 지우기 때문이다. 즉, <b>인터페이스는 작성 중인 코드에 대한 더 많은 정보를 타입스크립트에게 제공하기 위해 존재한다는 것을 알아두어야 한다. </b></p>
 <p>타입스크립트에게 더 많은 정보를 제공할 수 록 컴파일 시에 우리가 만드는 오류를 더 많이 잡아줄 수 있기 때문이다.</p>
+
+<hr/>
+
+## 열거형(Enum)과 리터럴 타입
+
+프로퍼티의 값을 단순히 타입으로 지정하는 것이 아닌, 실제 값만 받고 싶을 때 우리는 열거형(enum)과 리터럴 타입을 이용하여 프로퍼티에 지정될 키 값을 미리 정해줄 수 있습니다.<br/>
+이렇게 정해진 프로퍼티 키 값으로만 할당을 해줘야 오류가 나지 않고 실행될 수 있습니다.
+
+```ts
+interface Student {
+  studentID: number;
+  studentName: string;
+  age?: number;
+  gender: string;
+  subject: string;
+  courseCompleted: boolean;
+  // addComment? (comment: string): string;
+  addComment?: (comment: string) => string;
+}
+```
+
+<p>우리가 만든 Student 인터페이스입니다. 만일 gender 프로퍼티의 값을 string 타입 중에서도 male 과 female로만 값을 설정할 수 있도록 하려면 어떻게 해야할까요?</p>
+<p>첫 번째로는 열거형 Enum을 사용하는 방법입니다. </p>
+
+### Enum
+
+Enum은 연관된 아이템들을 함께 묶어서 표현할 수 있는 수단이라는 의미를 가집니다.<br/>
+Enum을 적용하는 방법은 다음과 같습니다.
+
+```ts
+enum GenderType {
+  Male,
+  Female,
+}
+// enum 이라는 타입으로 GenderType 키워드를 생성해줍니다.
+
+...
+
+interface Student {
+  studentID: number;
+  studentName: string;
+  age?: number;
+  gender: GenderType;   // string에서 GenderType으로 변환
+  subject: string;
+  courseCompleted: boolean;
+  // addComment? (comment: string): string;
+  addComment?: (comment: string) => string;
+}
+
+// 기존 인터페이스에 gender 프로퍼티의 값을 enum으로 설정한 GenderType으로 타입을 설정해 줍니다.
+```
+
+그리고 파일을 변환하면 다음과 같은 오류가 나타납니다.<br/>
+<img src = "./image/enum.png" alt="enum"> <br/>
+기존에 우리가 작성한 함수에서 gender 타입으로 지정해줬던 값과 enum을 통해 GenderType 내부에 선언한 값이 다르기 때문입니다.<br/>
+그렇기 때문에 함수 내에 사용한 gender 프로퍼티의 값을 재설정해줘야 합니다.
+
+```ts
+function getStudentDetails(studentID: number):Student 
+{
+  return {
+    studentID: 12345,
+    studentName: 'Jenny Kim',
+    gender: GenderType.Female,      // 'female'의 string 타입에서 enum을 적용시킨 GenderType의 Female 로 값을 할당해줌
+    subject: 'JavaScript',
+    courseCompleted: true
+  };
+}
+```
+<br/>
+성공적으로 enum을 적용해 주었습니다. 이제 컴파일된 js 파일을 확인해 볼까요?<br/>
+
+<img width="80%" src = "./image/enumToJS.png" alt="enumToJS"> <br/>
+
+기존 인터페이스와는 다르게 enum으로 만들어준 GenderType은 js 코드에 작성되는 것을 볼 수 있습니다. <br/>
+하지만 우리는 컴파일된 js 코드에서도 0, 1, 2 등으로 인덱스처럼 number 타입으로 해당 프로퍼티 값이 정의되는 것이 아닌 string 타입으로 정의되는 것을 원합니다. <br/>
+ts에서는 이러한 성질을 string enum이라는 것을 통해 적용하도록 해줍니다.
+
+### string enum
+
+```ts
+enum GenderType {
+  Male = 'male',
+  Female = 'female'
+}
+```
+<br/>
+간단하게 enum의 GenderType 의 프로퍼티 값에 각각 string 타입의 value를 선언해줍니다.<br/>
+이를 통해 js 파일에서도 기존의 number 형식의 인덱스값이 아닌, 문자열 값을 갖게 됩니다.<br/>
+이것을 string enum이라고 합니다.
+
+```js
+case 1: 이전 코드
+(function (GenderType) {
+    GenderType[GenderType["Male"] = 0] = "Male";
+    GenderType[GenderType["Female"] = 1] = "Female";
+})(GenderType || (GenderType = {}));
+
+...
+
+case 2: 바뀐 코드
+var GenderType;
+(function (GenderType) {
+    GenderType["Male"] = "male";
+    GenderType["Female"] = "female";
+})(GenderType || (GenderType = {}));
+```
+
+### 리터럴 타입

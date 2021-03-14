@@ -5,11 +5,16 @@ var age = 21;
 var gender = 'female';
 var subject = 'JavaScript';
 var courseCompleted = false;
+var GenderType;
+(function (GenderType) {
+    GenderType["Male"] = "male";
+    GenderType["Female"] = "female";
+})(GenderType || (GenderType = {}));
 var student1 = {
     studentID: 123454321,
     studentName: 'Janet Lee',
     age: 30,
-    gender: 'male',
+    gender: GenderType.Male,
     subject: 'Mongo DB',
     courseCompleted: false
 };
@@ -18,7 +23,7 @@ function getStudentDetails(studentID) {
     return {
         studentID: 12345,
         studentName: 'Jenny Kim',
-        gender: 'female',
+        gender: GenderType.Female,
         subject: 'JavaScript',
         courseCompleted: true
     };
