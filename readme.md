@@ -888,28 +888,6 @@ employee1.printEmployeeDetails();
 객체가 생성될 때, constructor의 매개변수(params)로 전달된 값은 객체의 프로퍼티 값으로 자동으로 그 값이 초기화되고 할당됩니다.<br/>
 위 설명을 더불어 바꾼 코드는 다음과 같습니다. <br/>
 
-```ts
-class Employee {
+<img src = "./image/constructor.png" alt="constructor"> <br/>
 
-  constructor(
-    private _fullName: string, 
-    private _perAge: number, 
-    private _jobTitle:string, 
-    private _hourlyRate: number, 
-    public workingHoursPerWeek: number){
-
-    }
-
-  get fullName (){
-    return this._fullName;
-  }
-
-  set fullName (value : string) {
-    this._fullName = value;
-  }
-
-  printEmployeeDetails = ():void =>{
-    console.log(`${this._fullName}의 직업은 ${this._jobTitle}이고 일주일의 수입은 ${this._hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
-  }
-}
-```
+<p>코드가 생성자로 인해 선언과 동시에 값이 초기화및 할당되었습니다. private으로 선언해 준 프로퍼티들은 암묵적인 약속에 의해 `_` 를 프로퍼티명 앞에 붙여줍니다.</p>
