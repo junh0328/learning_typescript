@@ -1,22 +1,22 @@
-## 참고자료
+## 👉🏼 참고자료
 
 이 글을 '땅콩코딩'님의 타입스크립트 강의를 바탕으로 작성된 글입니다.<br/>
 <a href="https://www.youtube.com/channel/UCQrIKpEc3FFO1KJ5zkoIcYA" taget="_blank">타입스크립트 강의 바로가기</a>
 
-## 사용한 extension
+## 👉🏼 사용한 extension
 
 - prettier
 - eslint
 - path intellisense
 - bracket pair colorizer
 
-## 특징
+## 👉🏼 특징
 
 타입스크립트는 js를 기반으로 한 언어이기 때문에 자바스크립트에서 유효한 코드는 타입스크립트에서도 유효하다
 
 > .ts로 작성하더라도 js 코드가 틀리지 않다면 실행에 문제가 없다.
 
-## 사용법
+## 👉🏼 사용법
 
 1. .ts 로 작성한 파일을 터미널에
 
@@ -52,7 +52,7 @@ tsc -w app.ts // 해당 파일
 
 <hr/>
 
-## 타입 추론(Type Inference)
+## 👉🏼 타입 추론(Type Inference)
 
 ```js
 let a = 5;
@@ -100,7 +100,7 @@ lostPoints는 return 되는 100 - lostPoints에 의해 자동적으로 number �
 
 <hr/>
 
-## 타입 명시
+## 👉🏼 타입 명시
 
 <p>타입 명시란 변수를 선언할 때, 변수 값의 타입을 명시함으로써 변수 값의 데이터 타입을 지정하는 것을 의미합니다. 또한 ts에서는 function 함수를 통해 return 되는 반환 값에도 타입을 지정해 줄 수 있습니다.</p>
 
@@ -136,7 +136,7 @@ function getStudentDetails(
 
 <hr/>
 
-## 인터페이스로 객체 구조 정의하기
+## 👉🏼 인터페이스로 객체 구조 정의하기
 
 복잡해보이는 위의 구조를 인터페이스를 사용하여 분리해봅니다.
 
@@ -229,7 +229,7 @@ Cannot assign to 'studentID' because it is a read-only property.
 
 <hr/>
 
-## 열거형(Enum)과 리터럴 타입
+## 👉🏼 열거형(Enum)과 리터럴 타입
 
 프로퍼티의 값을 단순히 타입으로 지정하는 것이 아닌, 실제 값만 받고 싶을 때 우리는 열거형(enum)과 리터럴 타입을 이용하여 프로퍼티에 지정될 키 값을 미리 정해줄 수 있습니다.<br/>
 이렇게 정해진 프로퍼티 키 값으로만 할당을 해줘야 오류가 나지 않고 실행될 수 있습니다.
@@ -376,7 +376,7 @@ function getStudentDetails(studentID: number):Student
 
 <hr/>
 
-## Any, Union Type, Type Aliases & Type Guards
+## 👉🏼 Any, Union Type, Type Aliases & Type Guards
 
 ### any 
 any 타입은 어떤 타입을 적어도 값을 할당할 수 있는 타입입니다.<br/>
@@ -457,7 +457,7 @@ setItemPrice(50);
 
 <hr/>
 
-## 함수 타이핑, 선택적 매개 변수와 기본 매개 변수
+## 👉🏼 함수 타이핑, 선택적 매개 변수와 기본 매개 변수
 
 이번에는 함수에 타입을 정의해주는 것을 배워보도록 하겠습니다. <br/>
 
@@ -652,3 +652,102 @@ const sendGreeting = (message ='Hello', userName = 'there'): void => console.log
 화살표 함수를 통해 더 간결한 표현이 가능합니다.
 */
 ```
+
+<hr/>
+
+## 👉🏼 객체 지향 프로그래밍, 클래스와 오브젝트 관계 파헤치기
+
+객체 지향 프로그래밍에서 클래스와 오브젝트(객체)는 뗄래야 뗄 수 없는 관계에 있습니다.<br/>
+객체는 클래스(class)를 통해서 만들어 질 수 있고, 클래스는 객체가 어떤 모습을 가질 지를 정의하고, 묘사하기 때문입니다.
+
+
+|Dog class|
+|:-:|
+|속성(프로퍼티)|
+|Breed|
+|Size|
+|Age|
+|Color|
+| - |
+|행동(함수)|
+| Eat( ) |
+| Sleep( ) |
+| Sit( ) |
+| Run( ) |
+
+### 기본 구조
+
+```ts
+let fullName: string;
+let perAge: number;
+let jobTitle: string;
+let hourlyRate: number;
+let workingHoursPerWeek: number;
+
+let printEmployeeDetails = (fullName:string, jobTitle:string, hourlyRate:number, workingHoursPerWeek:number):void =>{
+  console.log(`${fullName}의 직업은 ${jobTitle}이고 일주일의 수입은 ${hourlyRate*workingHoursPerWeek} 달러 입니다.`)
+}
+```
+<p>위의 코드는 기본적인 ts 타입 선언과 타입 명시를 통한 함수 생성입니다. 이를 class 객체로 만들어 보겠습니다.</p>
+
+```ts
+class Employee{
+  fullName: string;
+  perAge: number;
+  jobTitle: string;
+  hourlyRate: number;
+  workingHoursPerWeek: number;
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+
+```
+
+<p>클래스 속에서 정의된 함수들은 클래스 내 정의된 변수들에게 바로 접근이 가능하기 때문에 결과적으로 그렇지 않은 함수들보다 상대적으로 적은 매개변수를 가집니다.</p>
+
+<p>위와 같이 클래스 내에 정의된 변수를 '프로퍼티' 라고 하며, 클래스 내에 정의된 함수를 '메소드' 라고 부릅니다.</p>
+
+<p>OOP에서 클래스는 객체를 만들어 내기 위한 설계도, 생산틀로 보시면 됩니다. 이제 생성자를 통해 객체를 만들어 위의 메소드와 프로퍼티를 사용해보겠습니다.</p>
+
+```ts
+class Employee {
+  fullName: string; 
+  perAge: number;
+  jobTitle: string; 
+  hourlyRate: number; 
+  workingHoursPerWeek: number; 
+
+  printEmployeeDetails = ():void =>{
+    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
+  }
+}
+
+let employee1 = new Employee();
+
+employee1.printEmployeeDetails();
+
+>>>
+undefined의 직업은 undefined이고 일주일의 수입은 NaN 달러 입니다.
+
+```
+
+<p>Employee 클래스에 각 프로퍼티에 대한 키는 설정했지만 값을 설정하지 않아, 인스턴스 employee1을 만들어 메소드를 호출하여도, 원하는 결과값이 나오지 않았습니다. 클래스는 하나의 붕어빵틀과 같은 큰 틀이기 때문에, 생성자를 만들면서 employee1 인스턴스에 프로퍼티를 설정해주어야 합니다.</p>
+
+```ts
+...
+let employee1 = new Employee();
+employee1.fullName = '준모';
+employee1.jobTitle = '주니어 웹 개발자';
+employee1.hourlyRate = 40;
+employee1.workingHoursPerWeek = 35;
+employee1.printEmployeeDetails();
+
+>>>
+준모의 직업은 주니어 웹 개발자이고 일주일의 수입은 1400 달러 입니다.
+```
+
+<p>각 프로퍼티에 value를 선언해주었더니, 원하는 값을 얻을 수 있었습니다. 이 처럼 우리는 class 와 오브젝트의 관계를 가지는 객체지향 프로그래밍으로 더 효과적이고 가벼운 프로그래밍을 할 수 있습니다.</p>
+
+<hr/>
