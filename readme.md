@@ -330,3 +330,41 @@ var GenderType;
 ```
 
 ### 리터럴 타입
+
+enum을 사용하는 것과 같은 결과물을 출력하지만 훨씬 더 간편한 선언 방법을 알아보겠습니다.
+
+```ts
+interface Student {
+  studentID: number;
+  studentName: string;
+  age?: number;
+  gender: 'male' | 'female' | 'genderNeutral';
+  subject: string;
+  courseCompleted: boolean;
+  // addComment? (comment: string): string;
+  addComment?: (comment:string) => string;
+}
+```
+<br/>
+gender 프로퍼티에 enum에서 사용한 것과 같이 genderType.xxx 로 접근하는 것이 아닌, `|` 를 사용하여 값을 직접 적어주는 방식입니다.<br/>
+
+```ts
+function getStudentDetails(studentID: number):Student 
+{
+  return {
+    studentID: 12345,
+    studentName: 'Jenny Kim',
+    gender: 'female',
+    subject: 'JavaScript',
+    courseCompleted: true
+  };
+}
+
+```
+<br/>
+코드에서도 gender에서 리터럴한 string 값을 선택해서 적어주면 됩니다.<br/>
+
+
+<img width="80%" src = "./image/literal.png" alt="literal"> <br/>
+
+하지만, 리터럴로 적용한다면, js로 컴파일 될 때 enum 처럼 타입이 표시되지는 않는다는 점을 알아둬야 합니다.
