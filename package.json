@@ -1,0 +1,30 @@
+{
+  "name": "learning_typescript",
+  "version": "1.0.0",
+  "description": "- prettier - eslint - path intellisense - bracket pair colorizer",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junh0328/learning_typescript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/junh0328/learning_typescript/issues"
+  },
+  "homepage": "https://github.com/junh0328/learning_typescript#readme"
+}

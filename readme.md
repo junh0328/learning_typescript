@@ -368,3 +368,84 @@ function getStudentDetails(studentID: number):Student
 <img width="80%" src = "./image/literal.png" alt="literal"> <br/>
 
 하지만, 리터럴로 적용한다면, js로 컴파일 될 때 enum 처럼 타입이 표시되지는 않는다는 점을 알아둬야 합니다.
+
+<hr/>
+
+## Any, Union Type, Type Aliases & Type Guards
+
+### any 
+any 타입은 어떤 타입을 적어도 값을 할당할 수 있는 타입입니다.<br/>
+
+```ts
+let someValue: any = 5;
+someValue = 'hello';
+someValue = true;
+```
+<br/>
+이와 같이 someValue 변수에 타입을 any로 준다면, 기존 number > string > boolean 으로 타입변환이 자유롭게 가능해집니다.<br/>
+하지만, ts에서 효과적인 유지와 보수를 위해서는 타입에 관한 더많은 정보를 명시할 수록 더 좋겠죠?<br/>
+
+### union
+
+만약 작업중인 코드에 타입 명시가 어려운 경우, 그 중에서 제한된 타입만 설정해주기 위해서는 어떻게 해야할까요?<br/>
+바로 <b>union 타입</b>이라는 테크닉을 통해 적어줄 수 있습니다. 특별한 기능이 아닌 `|`를 통해 리터럴 형태로 나타내 주는 것입니다. <br/>
+
+```ts
+let someValue: number | string = 5;
+someValue = 'hello';
+
+someValue = true;  // 타입은 number 와 string으로 제한했으므로 boolean 타입을 쓴다면 에러가 납니다.
+
+>>>
+Type 'boolean' is not assignable to type 'string | number'.
+```
+
+### Type Aliases
+
+union 타입으로 타입을 지정해주는 것도 좋지만, 코드가 길어질 경우 코드의 재사용성 높이기 위해 <b>Type Aliases</b> 테크닉을 사용합니다.
+<br/>
+
+```ts
+type StrOrNum = number | string;
+
+let price: StrOrNum = 5;
+price = 'free';
+```
+<br/>
+string 타입과 number 타입을 유니언타입으로 사용하고 싶을 때, StrOrNum 이라는 Type Aliases를 생성하여 타입자리에 대신 사용할 수 있습니다.
+
+### 타입 가드
+
+```ts
+type StrOrNum = number | string;
+let itemPrice : number;
+
+const setItemPrice = (price: StrOrNum):void =>{
+  itemPrice = price;
+}
+
+setItemPrice(50);
+
+/*
+type.ts:18:3 - error TS2322: Type 'StrOrNum' is not assignable to type 'number'.
+  Type 'string' is not assignable to type 'number'.
+*/
+```
+<p>우리는 type aliases를 통해 StrOrNum 이라는 number, string 타입을 사용할 수 있는 타입을 선언해줬습니다. 하지만 함수내부에서 한가지 타입만 받는 경우의 변수가 같이 존재한다면 어떻게 해야 할까요? 위와 같은 상황에서 우리는 타입을 보호할 수 있는 타입 가드를 사용합니다.</p>
+
+```ts
+type StrOrNum = number | string;
+...
+
+const setItemPrice = (price: StrOrNum):void =>{
+  if(typeof price === 'string'){
+    itemPrice = 0;
+  }else{
+  itemPrice = price;
+}
+}
+
+setItemPrice(50);
+```
+
+<p>typeof 연산자를 사용하여 price 값이 number 일 때만 해당 코드가 작동하도록 합니다. 이를 타입 가드라고 합니다.</p>
