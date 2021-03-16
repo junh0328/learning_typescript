@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var someValue = 5;
 someValue = 'hello';
 // someValue = true;
@@ -12,11 +12,10 @@ var itemPrice;
 // }
 // setItemPrice(50);
 var setItemPrice = function (price) {
-    if (typeof price === 'string') {
-        itemPrice = 0;
-    }
-    else {
-        itemPrice = price;
-    }
+  if (typeof price === 'string') {
+    itemPrice = 0;
+  } else {
+    itemPrice = price;
+  }
 };
 setItemPrice(50);
