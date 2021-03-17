@@ -62,30 +62,30 @@ a = 5라고 지정한 해당 변수의 타입을 string으로 바꿔보려고 �
 
 ```js
 let a = 5;
-a = '타입스크립트';
+a = "타입스크립트";
 ```
 
 <br/>
 
 다음과 같은 오류가 발생한다. <br/>
 
-<img src = "./image/tc1.png" alt="tc1"> <br/>
+<img src = "./BASIC/image/tc1.png" alt="tc1"> <br/>
 
 ts는 변수 값이 기존 숫자타입(5)에서 다른 타입인 문자열('타입스크립트')로 바꿀 수 없기 때문에 변수를 재할당할 수 없다는 의미이다. <br/>
 ts의 특징인 <b>타입 추론</b>에 의해 변수 a의 타입은 자동으로 number 타입으로 지정된 것이다.<br/>
 또한 타입스크립트는 기존의 코드를 바탕으로 넘겨받는 파라미터의 타입을 자동으로 추론해주는 기능을 가지고 있다.<br/>
 
-<img src = "./image/tc2.png" alt="tc2"> <br/>
+<img src = "./BASIC/image/tc2.png" alt="tc2"> <br/>
 
 ```ts
 // 해당 코드를 ts로 바꾼 형태
 
 let student = {
-  name: 'Jake',
-  cours: 'Getting Started with TypeScript',
+  name: "Jake",
+  cours: "Getting Started with TypeScript",
   codingIQ: 80,
   code: function () {
-    console.log('brain is working hard');
+    console.log("brain is working hard");
   },
 };
 
@@ -106,10 +106,10 @@ lostPoints는 return 되는 100 - lostPoints에 의해 자동적으로 number �
 
 ```ts
 let studentID: number = 12345;
-let studentName: string = 'Jenny Kim';
+let studentName: string = "Jenny Kim";
 let age: number = 21;
-let gender: string = 'female';
-let subject: string = 'JavaScript';
+let gender: string = "female";
+let subject: string = "JavaScript";
 let courseCompleted: boolean = false;
 
 function getStudentDetails(studentID: number): any {
@@ -286,26 +286,26 @@ interface Student {
 ```
 
 그리고 파일을 변환하면 다음과 같은 오류가 나타납니다.<br/>
-<img src = "./image/enum.png" alt="enum"> <br/>
+<img src = "./BASIC/image/enum.png" alt="enum"> <br/>
 기존에 우리가 작성한 함수에서 gender 타입으로 지정해줬던 값과 enum을 통해 GenderType 내부에 선언한 값이 다르기 때문입니다.<br/>
 그렇기 때문에 함수 내에 사용한 gender 프로퍼티의 값을 재설정해줘야 합니다.
 
 ```ts
-function getStudentDetails(studentID: number):Student 
-{
+function getStudentDetails(studentID: number): Student {
   return {
     studentID: 12345,
-    studentName: 'Jenny Kim',
-    gender: GenderType.Female,      // 'female'의 string 타입에서 enum을 적용시킨 GenderType의 Female 로 값을 할당해줌
-    subject: 'JavaScript',
-    courseCompleted: true
+    studentName: "Jenny Kim",
+    gender: GenderType.Female, // 'female'의 string 타입에서 enum을 적용시킨 GenderType의 Female 로 값을 할당해줌
+    subject: "JavaScript",
+    courseCompleted: true,
   };
 }
 ```
+
 <br/>
 성공적으로 enum을 적용해 주었습니다. 이제 컴파일된 js 파일을 확인해 볼까요?<br/>
 
-<img width="80%" src = "./image/enumToJS.png" alt="enumToJS"> <br/>
+<img width="80%" src = "./BASIC/image/enumToJS.png" alt="enumToJS"> <br/>
 
 기존 인터페이스와는 다르게 enum으로 만들어준 GenderType은 js 코드에 작성되는 것을 볼 수 있습니다. <br/>
 하지만 우리는 컴파일된 js 코드에서도 0, 1, 2 등으로 인덱스처럼 number 타입으로 해당 프로퍼티 값이 정의되는 것이 아닌 string 타입으로 정의되는 것을 원합니다. <br/>
@@ -315,10 +315,11 @@ ts에서는 이러한 성질을 string enum이라는 것을 통해 적용하도�
 
 ```ts
 enum GenderType {
-  Male = 'male',
-  Female = 'female'
+  Male = "male",
+  Female = "female",
 }
 ```
+
 <br/>
 간단하게 enum의 GenderType 의 프로퍼티 값에 각각 string 타입의 value를 선언해줍니다.<br/>
 이를 통해 js 파일에서도 기존의 number 형식의 인덱스값이 아닌, 문자열 값을 갖게 됩니다.<br/>
@@ -350,34 +351,33 @@ interface Student {
   studentID: number;
   studentName: string;
   age?: number;
-  gender: 'male' | 'female' | 'genderNeutral';
+  gender: "male" | "female" | "genderNeutral";
   subject: string;
   courseCompleted: boolean;
   // addComment? (comment: string): string;
-  addComment?: (comment:string) => string;
+  addComment?: (comment: string) => string;
 }
 ```
+
 <br/>
 gender 프로퍼티에 enum에서 사용한 것과 같이 genderType.xxx 로 접근하는 것이 아닌, `|` 를 사용하여 값을 직접 적어주는 방식입니다.<br/>
 
 ```ts
-function getStudentDetails(studentID: number):Student 
-{
+function getStudentDetails(studentID: number): Student {
   return {
     studentID: 12345,
-    studentName: 'Jenny Kim',
-    gender: 'female',
-    subject: 'JavaScript',
-    courseCompleted: true
+    studentName: "Jenny Kim",
+    gender: "female",
+    subject: "JavaScript",
+    courseCompleted: true,
   };
 }
-
 ```
+
 <br/>
 코드에서도 gender에서 리터럴한 string 값을 선택해서 적어주면 됩니다.<br/>
 
-
-<img width="80%" src = "./image/literal.png" alt="literal"> <br/>
+<img width="80%" src = "./BASIC/image/literal.png" alt="literal"> <br/>
 
 하지만, 리터럴로 적용한다면, js로 컴파일 될 때 enum 처럼 타입이 표시되지는 않는다는 점을 알아둬야 합니다.
 
@@ -385,14 +385,16 @@ function getStudentDetails(studentID: number):Student
 
 ## 👉🏼 Any, Union Type, Type Aliases & Type Guards
 
-### any 
+### any
+
 any 타입은 어떤 타입을 적어도 값을 할당할 수 있는 타입입니다.<br/>
 
 ```ts
 let someValue: any = 5;
-someValue = 'hello';
+someValue = "hello";
 someValue = true;
 ```
+
 <br/>
 이와 같이 someValue 변수에 타입을 any로 준다면, 기존 number > string > boolean 으로 타입변환이 자유롭게 가능해집니다.<br/>
 하지만, ts에서 효과적인 유지와 보수를 위해서는 타입에 관한 더많은 정보를 명시할 수록 더 좋겠죠?<br/>
@@ -421,8 +423,9 @@ union 타입으로 타입을 지정해주는 것도 좋지만, 코드가 길어�
 type StrOrNum = number | string;
 
 let price: StrOrNum = 5;
-price = 'free';
+price = "free";
 ```
+
 <br/>
 string 타입과 number 타입을 유니언타입으로 사용하고 싶을 때, StrOrNum 이라는 Type Aliases를 생성하여 타입자리에 대신 사용할 수 있습니다.
 
@@ -430,11 +433,11 @@ string 타입과 number 타입을 유니언타입으로 사용하고 싶을 때,
 
 ```ts
 type StrOrNum = number | string;
-let itemPrice : number;
+let itemPrice: number;
 
-const setItemPrice = (price: StrOrNum):void =>{
+const setItemPrice = (price: StrOrNum): void => {
   itemPrice = price;
-}
+};
 
 setItemPrice(50);
 
@@ -443,6 +446,7 @@ type.ts:18:3 - error TS2322: Type 'StrOrNum' is not assignable to type 'number'.
   Type 'string' is not assignable to type 'number'.
 */
 ```
+
 <p>우리는 type aliases를 통해 StrOrNum 이라는 number, string 타입을 사용할 수 있는 타입을 선언해줬습니다. 하지만 함수내부에서 한가지 타입만 받는 경우의 변수가 같이 존재한다면 어떻게 해야 할까요? 위와 같은 상황에서 우리는 타입을 보호할 수 있는 타입 가드를 사용합니다.</p>
 
 ```ts
@@ -469,11 +473,11 @@ setItemPrice(50);
 이번에는 함수에 타입을 정의해주는 것을 배워보도록 하겠습니다. <br/>
 
 ```js
-function sendGreeting(message, userName){
-  console.log(`${message}, ${userName}`)
+function sendGreeting(message, userName) {
+  console.log(`${message}, ${userName}`);
 }
 
-sendGreeting('Hello', 'Mark');
+sendGreeting("Hello", "Mark");
 ```
 
 <br/>
@@ -482,6 +486,7 @@ sendGreeting('Hello', 'Mark');
 ### 함수의 타입 명시
 
 타입스크립트에서 함수를 작성하기 위해서는 두 가지 작업이 필요합니다
+
 1. 함수의 반환 (return) 타입
 2. 함수의 매개변수(parameter) 타입
 
@@ -494,15 +499,16 @@ function 함수이름(매개변수1, 매개변수2): 함수의 반환 타입{
   ...
 }
 ```
+
 <br/>
 위의 코드와 같이 ts에서는 매개변수를 표시하는 소괄호 '()' 뒤에 ': 함수의 반환 타입'을 명시해주어야 합니다.
 
 ```ts
-function sendGreeting(message, userName): void{
-  console.log(`${message}, ${userName}`)
+function sendGreeting(message, userName): void {
+  console.log(`${message}, ${userName}`);
 }
 
-sendGreeting('Hello', 'Mark');
+sendGreeting("Hello", "Mark");
 ```
 
 <br/>
@@ -536,11 +542,11 @@ function sendGreeting(message, userName): string[]{
 ### 함수의 매개변수 타입 명시
 
 ```ts
-function sendGreeting(message : string, userName: string): void{
-  console.log(`${message}, ${userName}`)
+function sendGreeting(message: string, userName: string): void {
+  console.log(`${message}, ${userName}`);
 }
 
-sendGreeting('Hello', 'Mark');
+sendGreeting("Hello", "Mark");
 ```
 
 <p>추가적으로 함수의 반환 타입과 더불어 매개변수(파라미터)의 타입 또한 적어주었습니다.</p>
@@ -565,9 +571,7 @@ sendGreeting('Hello');  // 함수에서 매개변수를 2개를 받는다고 했
 <p>이러한 오류 메세지가 나오는 이유는 타입스크립트에서는 함수에 정의된 모든 매개 변수가 함수에 필요하다고 가정하기 때문입니다. </p>
 
 ```ts
-function sendGreeting(param1, param2):void{
-
-}
+function sendGreeting(param1, param2): void {}
 
 sendGreeting(arg1, arg2);
 ```
@@ -575,11 +579,11 @@ sendGreeting(arg1, arg2);
 <p>ts에서는 함수에 정의된 파라미터들과 함수를 호출할 때 보내주는 arguments들을 모두 비교 검사하기 때문에 두 수가 일치해야 합니다. 만일 매개 변수를 선택적으로 받고 싶다면, 이전 인터페이스 시간에 배웠던 <b>선택적 매개변수</b>를 사용해야 합니다. </p>
 
 ```ts
-function sendGreeting(message : string, userName?: string): void{
-  console.log(`${message}, ${userName}`)
+function sendGreeting(message: string, userName?: string): void {
+  console.log(`${message}, ${userName}`);
 }
 
-sendGreeting('Hello');
+sendGreeting("Hello");
 ```
 
 <p>파라미터 속성 뒤에 `?`를 붙이면 선택적 매개변수로 만들어줄 수 있습니다. 여기서 중요한 점은 여러 개의 파라미터를 받을 때 선택적 매개변수를 사용한다면, 해당 매개변수를 가장 뒤에 위치시켜야 한다는 것입니다. 만일 선택적 매개변수로 채택한 매개변수가 중간에 위치한다면 그 뒤에 있는 매개변수들까지 모두 선택적 매개변수로 인식되게 됩니다.</p>
@@ -667,20 +671,19 @@ const sendGreeting = (message ='Hello', userName = 'there'): void => console.log
 객체 지향 프로그래밍에서 클래스와 오브젝트(객체)는 뗄래야 뗄 수 없는 관계에 있습니다.<br/>
 객체는 클래스(class)를 통해서 만들어 질 수 있고, 클래스는 객체가 어떤 모습을 가질 지를 정의하고, 묘사하기 때문입니다.
 
-
-|Dog class|
-|:-:|
-|속성(프로퍼티)|
-|Breed|
-|Size|
-|Age|
-|Color|
-| - |
-|행동(함수)|
-| Eat( ) |
-| Sleep( ) |
-| Sit( ) |
-| Run( ) |
+|   Dog class    |
+| :------------: |
+| 속성(프로퍼티) |
+|     Breed      |
+|      Size      |
+|      Age       |
+|     Color      |
+|       -        |
+|   행동(함수)   |
+|     Eat( )     |
+|    Sleep( )    |
+|     Sit( )     |
+|     Run( )     |
 
 ### 기본 구조
 
@@ -691,25 +694,38 @@ let jobTitle: string;
 let hourlyRate: number;
 let workingHoursPerWeek: number;
 
-let printEmployeeDetails = (fullName:string, jobTitle:string, hourlyRate:number, workingHoursPerWeek:number):void =>{
-  console.log(`${fullName}의 직업은 ${jobTitle}이고 일주일의 수입은 ${hourlyRate*workingHoursPerWeek} 달러 입니다.`)
-}
+let printEmployeeDetails = (
+  fullName: string,
+  jobTitle: string,
+  hourlyRate: number,
+  workingHoursPerWeek: number
+): void => {
+  console.log(
+    `${fullName}의 직업은 ${jobTitle}이고 일주일의 수입은 ${
+      hourlyRate * workingHoursPerWeek
+    } 달러 입니다.`
+  );
+};
 ```
+
 <p>위의 코드는 기본적인 ts 타입 선언과 타입 명시를 통한 함수 생성입니다. 이를 class 객체로 만들어 보겠습니다.</p>
 
 ```ts
-class Employee{
+class Employee {
   fullName: string;
   perAge: number;
   jobTitle: string;
   hourlyRate: number;
   workingHoursPerWeek: number;
 
-  printEmployeeDetails = ():void =>{
-    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
-  }
+  printEmployeeDetails = (): void => {
+    console.log(
+      `${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${
+        this.hourlyRate * this.workingHoursPerWeek
+      } 달러 입니다.`
+    );
+  };
 }
-
 ```
 
 <p>클래스 속에서 정의된 함수들은 클래스 내 정의된 변수들에게 바로 접근이 가능하기 때문에 결과적으로 그렇지 않은 함수들보다 상대적으로 적은 매개변수를 가집니다.</p>
@@ -720,11 +736,11 @@ class Employee{
 
 ```ts
 class Employee {
-  fullName: string; 
+  fullName: string;
   perAge: number;
-  jobTitle: string; 
-  hourlyRate: number; 
-  workingHoursPerWeek: number; 
+  jobTitle: string;
+  hourlyRate: number;
+  workingHoursPerWeek: number;
 
   printEmployeeDetails = ():void =>{
     console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
@@ -763,38 +779,49 @@ employee1.printEmployeeDetails();
 
 ```ts
 class Employee {
-  fullName: string; 
+  fullName: string;
   perAge: number;
-  jobTitle: string; 
-  hourlyRate: number; 
-  workingHoursPerWeek: number; 
+  jobTitle: string;
+  hourlyRate: number;
+  workingHoursPerWeek: number;
 
-  printEmployeeDetails = ():void =>{
-    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
-  }
+  printEmployeeDetails = (): void => {
+    console.log(
+      `${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${
+        this.hourlyRate * this.workingHoursPerWeek
+      } 달러 입니다.`
+    );
+  };
 }
 
 let employee1 = new Employee();
-employee1.fullName = '준모';
-employee1.jobTitle = '주니어 웹 개발자';
+employee1.fullName = "준모";
+employee1.jobTitle = "주니어 웹 개발자";
 employee1.hourlyRate = 40;
 employee1.workingHoursPerWeek = 35;
 employee1.printEmployeeDetails();
 ```
+
 <p>위 코드는 OOP의 특징을 활용하여 <b>Employee</b> 클래스를 선언하고, 인스턴스로 하여금 해당 클래스의 메소드를 사용해 보았습니다. 하지만, 인스턴스의 프로퍼티 값을 위의 코드처럼 일일히 지정해주는 것은 하나의 인스턴스 생성에는 문제가 없지만, 다수의 인스턴스를 생성할 때는 코드의 양이 방대해지고 가독성이 떨어질 수 있습니다.</p>
 
 ### 생성자(constructor)
 
 ```ts
 class Employee {
-  fullName: string; 
+  fullName: string;
   perAge: number;
-  jobTitle: string; 
-  hourlyRate: number; 
-  workingHoursPerWeek: number; 
+  jobTitle: string;
+  hourlyRate: number;
+  workingHoursPerWeek: number;
 
   // 생성자 함수를 생성하여, 인스턴스 생성시에 각 프로퍼티에 접근하여 값을 할당해야하는 작업을 줄일 수 있었다.
-  constructor(fullName: string, perAge: number, jobTitle:string, hourlyRate: number, workingHoursPerWeek: number){
+  constructor(
+    fullName: string,
+    perAge: number,
+    jobTitle: string,
+    hourlyRate: number,
+    workingHoursPerWeek: number
+  ) {
     this.fullName = fullName;
     this.perAge = perAge;
     this.jobTitle = jobTitle;
@@ -802,13 +829,17 @@ class Employee {
     this.workingHoursPerWeek = workingHoursPerWeek;
   }
 
-  printEmployeeDetails = ():void =>{
-    console.log(`${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${this.hourlyRate*this.workingHoursPerWeek} 달러 입니다.`)
-  }
+  printEmployeeDetails = (): void => {
+    console.log(
+      `${this.fullName}의 직업은 ${this.jobTitle}이고 일주일의 수입은 ${
+        this.hourlyRate * this.workingHoursPerWeek
+      } 달러 입니다.`
+    );
+  };
 }
 
-let employee1 = new Employee('준모', 25, '주니어 웹 개발자', 40, 35);
-employee1.fullName = '민수';
+let employee1 = new Employee("준모", 25, "주니어 웹 개발자", 40, 35);
+employee1.fullName = "민수";
 employee1.printEmployeeDetails();
 ```
 
@@ -823,17 +854,17 @@ employee1.fullName = '...'
 접근 제한자는 클래스 속 멤버 변수(프로퍼티)와 메소드에 적용될 수 있는 키워드입니다.<br/>
 접근 제한자를 통해 클래스 외부로부터의 접근을 통제할 수 있습니다.
 
-|종류|기능|
-|:-:|:-:|
-|public| default 값, class 외부에서도 접근 가능|
-|private| class 내에서만 접근 가능, 클래스 외부에서 접근 불가능(비공개 멤버)|
-|protected|클래스 내부와 상속받은 자식 클래스에서 접근 가능|
+|   종류    |                                기능                                |
+| :-------: | :----------------------------------------------------------------: |
+|  public   |               default 값, class 외부에서도 접근 가능               |
+|  private  | class 내에서만 접근 가능, 클래스 외부에서 접근 불가능(비공개 멤버) |
+| protected |          클래스 내부와 상속받은 자식 클래스에서 접근 가능          |
 
 <p>java와 c#과 같은 다른 OOP 와는 다르게 자바스크립트에서는 public 클래스 사용시 public 멤버를 노출시키기 위해서 public 키워드를 명시할 필요가 없다.</p>
 
-<img src = "./image/private.png" alt="private"> <br/>
+<img src = "./BASIC/image/private.png" alt="private"> <br/>
 
-<img src = "./image/private2.png" alt="private2"> <br/>
+<img src = "./BASIC/image/private2.png" alt="private2"> <br/>
 
 <p>위의 이미지는 접근 제한자의 기능을 알아보기 위한 이미지이다. public 키워드를 따로 기입하지 않더라도 자동적으로 public으로 인식되며, private 키워드를 사용시 클래스 외부에서 만든 자식 일지라도 접근이 불가능하다. 또한 private 키워드를 사용시 해당 프로퍼티에 접근 조차 불가능하다.</p>
 
@@ -845,11 +876,11 @@ employee1.fullName = '...'
 
 ```ts
 class Employee {
-  private _fullName: string; 
+  private _fullName: string;
   perAge: number;
-  jobTitle: string; 
-  hourlyRate: number; 
-  workingHoursPerWeek: number; 
+  jobTitle: string;
+  hourlyRate: number;
+  workingHoursPerWeek: number;
 
   constructor(fullName: string, perAge: number, jobTitle:string, hourlyRate: number, workingHoursPerWeek: number){
     this._fullName = fullName;
@@ -889,12 +920,11 @@ employee1.printEmployeeDetails();
 
 <p> get() 함수와 set() 함수는 class 외부에서 호출되지만, 선언은 class 내부에서 해줍니다. 우리가 호출하고자 하는 프로퍼티에 접근하기 위해서 해당 프로퍼티의 이름으로 get 메소드를 만들어 줍니다. 이와 마찬가지로 set 메소드를 설정해줍니다. set() 메소드에는 타입선언과 함께 우리가 바꿔줄 파라미터도 넣어줘야 겠죠?</p>
 
-
 ### Constructor의 매개변수에 Access Modifiers 직접 적용하기
 
 객체가 생성될 때, constructor의 매개변수(params)로 전달된 값은 객체의 프로퍼티 값으로 자동으로 그 값이 초기화되고 할당됩니다.<br/>
 위 설명을 더불어 바꾼 코드는 다음과 같습니다. <br/>
 
-<img src = "./image/constructor.png" alt="constructor"> <br/>
+<img src = "./BASIC/image/constructor.png" alt="constructor"> <br/>
 
 <p>코드가 생성자로 인해 선언과 동시에 값이 초기화및 할당되었습니다. private으로 선언해 준 프로퍼티들은 암묵적인 약속에 의해 `_` 를 프로퍼티명 앞에 붙여줍니다.</p>
