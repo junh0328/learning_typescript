@@ -928,3 +928,122 @@ employee1.printEmployeeDetails();
 <img src = "./BASIC/image/constructor.png" alt="constructor"> <br/>
 
 <p>코드가 생성자로 인해 선언과 동시에 값이 초기화및 할당되었습니다. private으로 선언해 준 프로퍼티들은 암묵적인 약속에 의해 `_` 를 프로퍼티명 앞에 붙여줍니다.</p>
+
+<hr/>
+
+## 추가적으로 공부하며 얻은 지식 정리 (ES5, ES6, typscript)
+
+<p>Do it! 타입스크립트 프로그래밍 책을 기반으로 작성된 개념 모음입니다.</p>
+
+### export default 키워드
+
+<p>타입스크립트는 자바스크립트와 호환하기 위해 export default 구문을 제공합니다.</p>
+
+```ts
+export default interface IPerson {
+  name: string;
+  age: number;
+}
+```
+
+<p>export default 키워드는 한 모듈이 내보내는 기능 중 오직 한개에만 붙일 수 있습니다. export default가 붙은 기능은 import 문으로 불러올 때 중괄호 {} 없이 사용할 수 있습니다. export default는 export등이 있는 파일에서도 사용할 수 있습니다.</p>
+
+```ts
+import { makeRandomNumber } from "../..."; // export한 함수 makeRandomNumber { }, 중괄호가 필요하다
+import IPerson from "./IPerson"; // export default한 인터페이스 IPerson 중괄호없이 사용이 가능하다.
+```
+
+### 추상 클래스
+
+<p>타입스크립트는 다른 언어처럼 abstract 키워드를 사용해 추상 클래스를 만들 수 있습니다. 추상 클래스는 다음처럼 abstract 키워드를 class 키워드 앞에 붙여서 만듭니다. 추상 클래스는 자신의 속성이나 메서드 앞에 abstract를 붙여 나를 상속하는 다른 클래스에서 이 속성이나 메소드를 구현하게 됩니다. </p>
+
+```ts
+abstract class AbstractPerson5 {
+  abstract name: string;
+  constructor(public age?: number) {}
+}
+```
+
+<p>다음 클래스는 추상클래스이므로 new 연산자를 적용해 객체를 만들 수 없습니다.</p>
+
+### 객체의 비구조화 할당문
+
+<p>코드를 구현할 때 인터페이스나 클래스처럼 관련된 정보를 묶어 새로운 타입으로 표현하는 것을 구조화(structuring)라고 합니다.</p>
+
+```ts
+case 1: 기존 코드
+
+let personName = 'Jack'
+let personAge = 32
+
+let companyName = 'Apple Company, Inc'
+let companyAge =43
+
+case 2 : 구조화한 코드
+
+export interface IPerons {
+  name: string;
+  age: number;
+}
+
+export interface ICompany {
+  name: string;
+  age: number;
+}
+
+let apple : ICompnay = {name: 'Apple Company, Inc', age:43};
+let ms : ICompnay = {name: 'Microsoft', age: 44}
+```
+
+### 비구조화란?
+
+<p>구조화된 데이터는 어떤 시점에서 데이터의 일부만 사용해야 할 때가 있습니다. 구조화된 jack 변수에서 jack이 아닌 jack.name, jack.age 부분을 각각 name과 age 변수에 저장합니다. 이 지점부터는 jack 변수는 더 사용하지 않고 그대신 name과 age 변수만 사용합니다. 이처럼 구조화된 데이터를 분해하는 것을 비구조화라고 합니다.</p>
+
+```ts
+let name = jack.name,
+  age = jack.age;
+```
+
+### 비구조화 할당
+
+<p>비구조화 할당은 ESNext 자바스크립트의 구문으로 타입스크립트에서도 사용할 수 있습니다. 비구조화 할당은 객체와 더불어 배열과 튜플에도 적용할 수 있습니다. 비구조화 할당을 객체에 적용하려면 얻고 싶은 속성을 중괄호로 묶습니다.</p>
+
+```ts
+let jack: IPerson = { name: "Jack", age: 32 };
+let { name, age } = jack;
+
+console.log(name, age);
+>>>
+Jack, 32
+```
+
+### 일등 함수
+
+<p>프로그래밍 언어가 일등 함수 기능을 제공하면 '함수형 프로그래밍 언어'라고 합니다. 자바스크립트와 타입스크립트는 일등 함수기능이 있으므로 함수형 프로그래밍 언어입니다. 일등 함수란, 함수와 변수를 구분하지 않는다는 의미입니다.</p>
+
+```ts
+let f = function (a, b) {
+  return a + b;
+};
+
+f = function (a, b) {
+  return a - b;
+};
+
+// 심벌 f 가 변수인지 함수인지 사실상 구분할 수 없습니다. 이것이 변수와 함수를 차별하지 않는다는 의미입니다.
+```
+
+### this 키워드
+
+<p>타입스크립트의 function 키워드로 만든 함수는 Function이란 클래스의 인스턴스, 즉 함수는 객체라고 했습니다. 객체지향 언어에서 인스턴스는 this 키워드를 사용할 수 있습니다. 타입스크립트에서는 function 키워드로 만든 함수에 this 키워드를 사용할 수 있습니다. 반면에 화살표 함수에는 this 키워드를 사용할 수 없습니다.(function 키워드로 만든 함수에만 this 키워드 사용가능)</p>
+
+```ts
+export class A {
+  value: nubmer = 1;
+  method: () => void = function (): void {
+    console.log(`value: ${this.value}`);
+  };
+}
+
+// 스크립팅 엔진이 function 키워드를 만나는 순간 같은 스코프에 위치한 value, method()에서는 this 키워드를 사용하여 해당 속성을 가져올 수 있습니다.
+```
