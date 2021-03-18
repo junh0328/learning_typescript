@@ -1047,3 +1047,84 @@ export class A {
 
 // 스크립팅 엔진이 function 키워드를 만나는 순간 같은 스코프에 위치한 value, method()에서는 this 키워드를 사용하여 해당 속성을 가져올 수 있습니다.
 ```
+
+### 제네릭 방식 타입
+
+<P>배열을 다루는 함수를 작성할 때는 `nubmer[]`와 같이 타입이 고정된 함수를 만들기보다는 `T[]` 형태로 배열의 아이템 타입을 한꺼번에 표현하는 것이 편리합니다. 타입을 T, Q와 같은 일종의 타입변수로 취급하는 것을 제네릭(generic)타입이라고 합니다.</P>
+
+```js
+case 2 : 일반적으로 표기하기
+
+const arrayLength = (array) => arrary.length;
+```
+
+```ts
+case 2 : 제네릭 타입으로 표기하기
+
+const arrayLength = (array: T[]): number => array.length;
+```
+
+<p>그런데 이렇게 하면 컴파일러가 T의 의미를 알 수 있어야 합니다. 즉 T가 타입 변수라고 알려줘야 합니다. 예를 들어, 배열의 길이를 구하는 함수와 배열이 비었는지를 판별하는 함수를 제네릭 함수 스타일로 구현하면 다음과 같습니다.</p>
+
+```ts
+export const arrayLength = <T>(array: T[]): number => array.length;
+export const isEmpty = <T>(array: T[]): boolean => arrayLength<T>(array) == 0;
+```
+
+```ts
+import { arrayLength, isEmpty } from "./arrayLength";
+let numArray: number[] = [1, 2, 3];
+let strArray: string[] = ["Hello", "World"];
+
+type IPerson = { name: string; age?: number };
+let personArray: IPerson[] = [{ name: "Jack" }, { name: "Jane", age: 32 }];
+
+console.log(
+  arrayLength(numArray),
+  arrayLength(strArray),
+  arrayLength(personArray),
+  isEmpty([]),
+  isEmpty([1])
+);
+
+>>>
+3
+2
+2
+true
+false
+```
+
+### 제네릭 함수의 타입 추론
+
+제네릭 형태로 구현된 함수는 원칙적으로 타입 변수를 다음과 같은 형태로 명시해 주어야 합니다.
+
+```ts
+함수 이름<타입 변수>(매개변수)
+```
+
+<p>허자먼, 타입 변수는 생략이 가능하고 node.js 엔진이 생략된 제네릭 함수를 만나면 타입추론을 통해 생략된 타입을 찾아냅니다.</p>
+
+### 제네릭 함수
+
+```ts
+case 1: 함수 선언식으로 제네릭 표기
+
+function g1<T>(a:T): void{}
+function g2<T,Q>(a:T, b:Q): void{}
+
+
+case 2: 함수 표현식으로 제네릭 표기(화살표 함수 사용)
+
+const g3 = <T>(a: T): void => {}
+const g4 = <T,Q>(a:T, b:Q): void => {}
+...
+```
+
+```ts
+case 3: 타입 별칭에 제네릭 타입을 적용
+
+type Type1Func<T> = (T) => void
+type Type2Func<T, Q> = (T,Q) => void
+type Type3Func<T, Q, R> = (T,Q) => R
+```
