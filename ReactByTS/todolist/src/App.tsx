@@ -2,8 +2,10 @@ import React from 'react';
 import Counter from './Counter';
 import Greetings from './Greetings';
 import MyForm from './MyForm';
+import ReducerSample from './ReducerSample';
+import { SampleProvider } from './SampleContext';
 
-function App() {
+const App: React.FC = () => {
   const onClick = (name: string) => {
     alert(`${name} say hello~`);
   };
@@ -14,10 +16,16 @@ function App() {
   return (
     <div>
       <Greetings name="준희" optional="옵션입니다" onClick={onClick} />
+      <hr />
       <Counter />
+      <hr />
       <MyForm onSubmit={onSubmit} />
+      <hr />
+      <SampleProvider>
+        <ReducerSample />
+      </SampleProvider>
     </div>
   );
-}
+};
 
 export default App;

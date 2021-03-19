@@ -1,4 +1,22 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
+
+type Action = { type: 'INCREASE' } | { type: 'DECREASE' };
+
+const initialState = 0;
+
+const INCREASE = 'INCREASE';
+const DECREASE = 'DECREASE';
+
+const reducer = (state: number, action: Action): number => {
+  switch (action.type) {
+    case INCREASE:
+      return state + 1;
+    case DECREASE:
+      return state - 1;
+    default:
+      throw new Error('Unhandled action');
+  }
+};
 
 const Counter = () => {
   // const [count, setCount] = useState<number>(0); 제네릭을 사용하지 않아도 알아서 타입을 유추하기 때문에 생략해도 상관없다.
@@ -9,9 +27,9 @@ const Counter = () => {
   const [info, setInformation] = useState <Information | null >(null);
   */
 
-  const [count, setCount] = useState(0);
-  const onIncrease = () => setCount(count + 1);
-  const onDecrease = () => setCount(count - 1);
+  const [count, dispatch] = useReducer(reducer, initialState);
+  const onIncrease = () => dispatch({ type: INCREASE });
+  const onDecrease = () => dispatch({ type: DECREASE });
 
   return (
     <div>
