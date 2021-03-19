@@ -123,8 +123,8 @@ function getStudentDetails(studentID: number): any {
 function getStudentDetails(
   studentID: number
 ): {
-  studentID: number;
-  studentName: string;
+  studentID: number; // 인터페이스나 타입을 통해 사전에 function 함수를 통해 return 받을 반환값을 적어주지 않는 경우
+  studentName: string; // { } 중괄호 안에 리턴받을 값을 명시해줘야 합니다.
   age: number;
   gender: string;
   subject: string;
@@ -1128,3 +1128,19 @@ type Type1Func<T> = (T) => void
 type Type2Func<T, Q> = (T,Q) => void
 type Type3Func<T, Q, R> = (T,Q) => R
 ```
+
+### 타입과 인터페이스의 차이
+
+<p>두개의 차이점은?</p>
+
+> 타입과 인터페이스는 유사합니다. 그러나 인터페이스가 타입에 비해 좀 더 가용성이 높습니다.
+
+- 타입은 새로운 이름을 만들지 않습니다. (즉, 에러 메시지같은 곳에서 별명으로 출력되지 않고, 리터럴 그대로 출력됩니다.) 그러나 인터페이스는 새로운 이름을 만듭니다.
+- 인터페이스는 상속(extends)되거나 구현(implements)될 수 있습니다. 반대로 다른 타입을 상속하거나 구현할 수 있습니다. 그러나 객체 타입 리터럴의 앨리어스는 그렇지 않습니다. (TS 2.7 부터는 타입도 인터섹션을 통해 다른 타입을 상속할 수 있습니다.)
+- 인터페이스는 여러 병합된 선언(merged declaration)을 가질 수 있습니다. 즉, 같은 이름의 인터페이스를 여러번 선언할 수 있습니다. 그러나 객체 타입 리터럴의 앨리어스는 그렇지 않습니다.
+
+  > 그럼 둘중에 어느것을 사용해야 할까요?
+
+- 공식 문서에는 최대한 타입 대신 인터페이스를 사용하라고 나와있으며, 인터페이스로 표현할 수 없는 형태이거나 유니온 혹은 튜플을 사용해야 하는 경우라면 타입을 사용해야 한다고 합니다.
+
+> 출처: https://kjwsx23.tistory.com/466 [香格里拉]

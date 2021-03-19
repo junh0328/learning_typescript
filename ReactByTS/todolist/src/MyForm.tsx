@@ -4,7 +4,8 @@ type MyFormProps = {
   onSubmit: (form: { name: string; description: string }) => void;
 };
 
-const MyForm = ({ onSubmit }: MyFormProps) => {
+const MyForm = ({ onSubmit }: MyFormProps): any => {
+  // 타입 또는 인터페이스에서 만든 메소드를 사용할 때 {} 중괄호에 해당 함수를 넣어 선언
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -12,7 +13,7 @@ const MyForm = ({ onSubmit }: MyFormProps) => {
 
   const { name, description } = form;
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>): any => {
     const { name, value } = e.target;
     setForm({
       ...form,
@@ -20,7 +21,7 @@ const MyForm = ({ onSubmit }: MyFormProps) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): any => {
     e.preventDefault();
     onSubmit(form);
     setForm({
