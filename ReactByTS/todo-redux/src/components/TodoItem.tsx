@@ -6,6 +6,7 @@ type TodoItemProps = {
   onToggle: (id: number) => void;
   onRemove: (id: number) => void;
 };
+// props로 넘겨받은 todo, onToggle, onRemove에 대한 타입을 지정해주었다.
 
 const TodoItem = ({ todo, onToggle, onRemove }: TodoItemProps) => {
   const textStyle: CSSProperties = {

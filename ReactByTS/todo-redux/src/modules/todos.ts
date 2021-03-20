@@ -3,7 +3,7 @@ const ADD_TODO = 'todos/ADD_TODO' as const;
 const TOGGLE_TODO = 'todos/TOGGLE_TODO' as const;
 const REMOVE_TODO = 'todos/REMOVE_TODO' as const;
 
-let nextId = 1; // 새로운 항목을 추가 할 때 사용 할 고유 ID 값
+let nextId = 4; // 새로운 항목을 추가 할 때 사용 할 고유 ID 값
 
 // 액션 생성 함수
 export const addTodo = (text: string) => ({
@@ -38,7 +38,23 @@ export type Todo = {
 export type TodosState = Todo[];
 
 // 초기 상태 선언
-const initialState: TodosState = [];
+const initialState: TodosState = [
+  {
+    id: 1,
+    text: '냥냥펀치',
+    done: false,
+  },
+  {
+    id: 2,
+    text: '원투펀치',
+    done: false,
+  },
+  {
+    id: 3,
+    text: '쓰리포펀치',
+    done: false,
+  },
+];
 
 // 리듀서 작성
 export default function todos(state: TodosState = initialState, action: TodosAction) {
