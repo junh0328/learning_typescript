@@ -6,9 +6,16 @@ const DECREASE = 'counter/DECREASE' as const;
 const INCREASE_BY = 'counter/INCREASE_BY' as const;
 
 // 액션 생성함수를 선언합니다
-export const increase = () => ({
-  type: INCREASE,
-});
+// export const increase = () => ({
+//   type: INCREASE,
+// });
+
+// 🌟 같은 함수이지만 중괄호를 사용했기 때문에 return 문을 통해 해당 반환 값을 적어주어야 한다.
+export const increase = () => {
+  return {
+    type: INCREASE,
+  };
+};
 
 export const decrease = () => ({
   type: DECREASE,
@@ -21,11 +28,13 @@ export const increaseBy = (diff: number) => ({
   payload: diff,
 });
 
+// ReturnType은 interface를 대신하여 사용하는 타입 선언이며, 중복을 제거하는 기능을 합니다.
 type CounterAction = ReturnType<typeof increase> | ReturnType<typeof decrease> | ReturnType<typeof increaseBy>;
 
 type CounterState = {
   // Reducer의 initialState의 타입
   count: number;
+  // count : number = 0; 이라 작성할 경우 [형식 리터럴 속성에는 이니셜라이저를 사용할 수 없습니다] 라는 오류가 발생한다.
 };
 
 const initialState: CounterState = {

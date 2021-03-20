@@ -9,15 +9,15 @@ const CounterContainer = () => {
   const { count } = useSelector((state: RootState) => state.counter); // 같은 useSelector 지만, 비구조화 할당을 통해 만듬
   const dispatch = useDispatch();
 
-  const onIncrease = () => {
+  const onIncrease = (): void => {
     dispatch(increase());
   };
 
-  const onDecrease = () => {
+  const onDecrease = (): void => {
     dispatch(decrease());
   };
 
-  const onIncreaseBy = (diff: number) => {
+  const onIncreaseBy = (diff: number): void => {
     dispatch(increaseBy(diff));
   };
 
