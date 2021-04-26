@@ -1,8 +1,8 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../modules";
-import { increase, decrease, increaseBy } from "../modules/counter";
-import Counter from "../components/Counter";
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../modules';
+import { increase, decrease, increaseBy } from '../modules/counter';
+import Counter from '../components/Counter';
 
 const CounterContainer = () => {
   // 상태를 조회합니다. 상태를 조회 할 때에는 state 의 타입을 RootState 로 지정해야합니다.
