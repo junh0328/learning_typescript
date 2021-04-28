@@ -1,3 +1,5 @@
+// 사용자에게 보여지는 UI, 프레젠테이셔널 컴포넌트
+
 import React from 'react';
 
 type CounterProps = {

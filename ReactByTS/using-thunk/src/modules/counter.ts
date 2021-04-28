@@ -62,3 +62,24 @@ function counter(
 }
 
 export default counter;
+
+/*
+원래 리듀서 구조에서 typescript 변환시 추가되는 부분
+
+1. initialState로 사용될 상태(state) 값에 대한 타입 👊🏼 :CounterState 
+2. action 들의 상태를 정의해놓은 타입 👊🏼 :CounterAction
+3. counter2 함수를 통해 리턴될 결과물에 대한 타입 👊🏼 :CounterState
+
+function counter2(state = initialState, action) {
+  switch (action.type) {
+    case INCREASE: // case 라고 입력하고 Ctrl + Space 를 누르면 어떤 종류의 action.type들이 있는지 확인 할 수 있습니다.
+      return { count: state.count + 1 };
+    case DECREASE:
+      return { count: state.count - 1 };
+    case INCREASE_BY:
+      return { count: state.count + action.payload };
+    default:
+      return state;
+  }
+}
+ */
