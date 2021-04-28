@@ -1,70 +1,42 @@
-# Getting Started with Create React App
+# 👊🏼 redux-thunk 타입스크립트에 적용하기 👊🏼 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 👊🏼 0. index.tsx 에 thunk 미들웨어 설치 및 연동하기 (페이지네이션 하기)
 
-## Available Scripts
+<p>src/index.js</p>
 
-In the project directory, you can run:
+## 👊🏼 1. API 불러오기
 
-### `yarn start`
+<p>src/api/github.ts</p>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 👊🏼 2. 리덕스 모듈 만들기
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 🎯 2.1 액션 정의하기
 
-### `yarn test`
+<p>src/modules/github/actions.ts</p>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🎯 2.2 thunk 함수 작성하기
 
-### `yarn build`
+<p>modules/github/thunks.ts</p>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🎯 2.3 리듀서 작성하기
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+<p>src/modules/github/types.ts</p>
+<p>src/modules/github/reducer.ts</p>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🎯 2.4 root reducer에 등록하기
 
-### `yarn eject`
+<p>src/modules/github/index.ts</p>
+<p>src/modules/index.ts</p>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 👊🏼 3. 프레젠테이셔널 컴포넌트 (UI) 준비하기
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<p>src/components/GithubUsernameForm.tsx</p>
+<p>src/components/GithubProfileInfo.tsx</p>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 👊🏼 4. 컨테이너 컴포넌트 만들기
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+<p>src/containers/GithubProfileLoader.tsx</p>
 
-## Learn More
+## 👊🏼 5. App.tsx에 연동하여 확인하기
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<p>src/App.tsx</p>

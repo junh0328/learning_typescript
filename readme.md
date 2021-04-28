@@ -1095,6 +1095,9 @@ export class A {
 
 <P>배열을 다루는 함수를 작성할 때는 `nubmer[]`와 같이 타입이 고정된 함수를 만들기보다는 `T[]` 형태로 배열의 아이템 타입을 한꺼번에 표현하는 것이 편리합니다. 타입을 T, Q와 같은 일종의 타입변수로 취급하는 것을 제네릭(generic)타입이라고 합니다.</P>
 
+> <a href="https://velog.io/@devgosunman/Generic%EC%A0%9C%EB%84%A4%EB%A6%AD%EC%9D%B4%EB%9E%80">제네릭에 대해 더 알아보기</a><br/>
+> 링크: velog, 'devgosunman' 님의 글 '💡 Generic(제네릭)이란?'
+
 ```js
 case 2 : 일반적으로 표기하기
 

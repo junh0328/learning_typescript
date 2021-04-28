@@ -11,3 +11,7 @@ export type GithubState = {
     data: GithubProfile | null;
   };
 };
+
+/*
+GithubAction 은 actions에 들어있는 모든 액션들
+*/
