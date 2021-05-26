@@ -13,7 +13,7 @@ const MyForm = ({ onSubmit }: MyFormProps): any => {
 
   const { name, description } = form;
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>): any => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({
       ...form,
@@ -21,7 +21,7 @@ const MyForm = ({ onSubmit }: MyFormProps): any => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): any => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(form);
     setForm({

@@ -18,7 +18,7 @@ const reducer = (state: number, action: Action): number => {
   }
 };
 
-const Counter = () => {
+function Counter() {
   // const [count, setCount] = useState<number>(0); 제네릭을 사용하지 않아도 알아서 타입을 유추하기 때문에 생략해도 상관없다.
   // 상태가 null 일 수도 있고 아닐 수도 있을 때 Generics 를 사용하면 좋습니다.
 
@@ -40,6 +40,6 @@ const Counter = () => {
       <button onClick={onDecrease}>- 1</button>
     </div>
   );
-};
+}
 
 export default Counter;
