@@ -13,11 +13,14 @@ const TodoInsert = ({ onInsert }: TodoInsertProps) => {
     setValue(e.target.value);
   }, []);
 
-  const onSubmit = useCallback((e: FormEvent) => {
-    e.preventDefault();
-    onInsert(value);
-    setValue('');
-  }, []);
+  const onSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      onInsert(value);
+      setValue('');
+    },
+    [value],
+  );
   return (
     <form onSubmit={onSubmit}>
       <input placeholder="할 일을 입력하세요" value={value} onChange={onChange} />
