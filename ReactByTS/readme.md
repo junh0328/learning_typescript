@@ -338,3 +338,228 @@ export default MyForm;
 ```
 
 <p>매우 까다로운 과정일 수 있지만 이 흐름을 이해한다면, 상태관리 전까지 리액트에 타입스크립트를 적용하는 것은 문제가 없을 것입니다!</p>
+
+## 📍 2. todo-redux (타입스크립트에서 리덕스 프로처럼 사용하긴)
+
+- <a href="https://github.com/erikras/ducks-modular-redux">Ducks 패턴</a>을 사용하여 todolist에 리덕스 형식을 적용합니다
+- 즉, 액션타입, 액션생성함수, 리듀서를 모두 한 파일에 작성하겠다는 의미입니다
+- 기본적인 TodoApp의 틀은 다음과 같습니다.
+
+```tsx
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../modules";
+import { toggleTodo, removeTodo, addTodo } from "../modules/todos";
+import TodoInsert from "../components/TodoInsert";
+import TodoList from "../components/TodoList";
+
+function TodoApp() {
+  const todos = useSelector((state: RootState) => state.todos);
+  const dispatch = useDispatch();
+
+  const onInsert = (text: string) => {
+    dispatch(addTodo(text));
+  };
+
+  const onToggle = (id: number) => {
+    dispatch(toggleTodo(id));
+  };
+
+  const onRemove = (id: number) => {
+    dispatch(removeTodo(id));
+  };
+
+  return (
+    <>
+      <TodoInsert onInsert={onInsert} />
+      <TodoList todos={todos} onToggle={onToggle} onRemove={onRemove} />
+    </>
+  );
+}
+
+export default TodoApp;
+```
+
+- react-redux의 useDispatch와 useSelector를 사용하여 상태관리 및 액션을 실행합니다.
+- useSelector로 관리되는 todos 는 RootState 를 통해 합쳐진 todos 모듈입니다.
+- (state: RootState)에서 타입을 지정해준 RootState는 modules/index 에서 export 하였습니다.
+- 함수별 파라미터에는 해당 타입을 선언해주었고 props로 함수를 넘겨주었습니다.
+
+> 우선 RootState관리하는 모듈인 todos 모듈부터 보겠습니다.
+
+```tsx
+// 액션 타입 선언
+// 뒤에 as const 를 붙여줌으로써 나중에 액션 객체를 만들게 action.type 의 값을 추론하는 과정에서
+// action.type 이 string 으로 추론되지 않고 'todos/ADD_TODO' 와 같이 실제 문자열 값으로 추론 되도록 해줍니다.
+const ADD_TODO = "todos/ADD_TODO" as const;
+const TOGGLE_TODO = "todos/TOGGLE_TODO" as const;
+const REMOVE_TODO = "todos/REMOVE_TODO" as const;
+
+let nextId = 4; // 새로운 항목을 추가 할 때 사용 할 고유 ID 값
+
+// 액션 생성 함수를 생성합니다
+export const addTodo = (text: string) => ({
+  type: ADD_TODO, // action.type 의 값을 추론하는 과정
+  payload: {
+    id: nextId++,
+    text,
+  },
+});
+
+// 액션에 부가적으로 필요한 값을 payload 라는 이름으로 통일합니다
+// 이는 FSA (https://github.com/redux-utilities/flux-standard-action) 라는 규칙인데
+// 이 규칙을 적용하면 액션들이 모두 비슷한 구조로 이루어져있게 되어 추후 다룰 때도 편하고
+// 읽기 쉽고, 액션 구조를 일반화함으로써 액션에 관련돤 라이브러리를 사용 할 수 있게 해줍니다.
+// 다만, 무조건 꼭 따를 필요는 없습니다.
+
+export const toggleTodo = (id: number) => ({
+  type: TOGGLE_TODO,
+  payload: id,
+});
+
+export const removeTodo = (id: number) => ({
+  type: REMOVE_TODO,
+  payload: id,
+});
+
+// 모든 액션 객체들에 대한 타입 준비
+// ReturnType<typeof _____> 는 특정 함수의 반환값을 추론해줍니다
+// 상단부에서 액션타입을 선언 할 떄 as const 를 하지 않으면 이 부분이 제대로 작동하지 않습니다.
+type TodosAction =
+  | ReturnType<typeof addTodo>
+  | ReturnType<typeof toggleTodo>
+  | ReturnType<typeof removeTodo>;
+
+// 상태에서 사용 할 할 일 항목 데이터 타입 정의
+export type Todo = {
+  id: number;
+  text: string;
+  done: boolean;
+};
+
+// 이 모듈에서 관리할 상태는 Todo 객체로 이루어진 배열
+// 관리해야 하는 상태가 배열이기 때문에 Todo 배열에 대한 타입을 지정하는 과정을 한번 더 거쳤습니다.
+export type TodosState = Todo[];
+
+// 초기 상태 선언
+const initialState: TodosState = [
+  {
+    id: 1,
+    text: "냥냥펀치",
+    done: false,
+  },
+  {
+    id: 2,
+    text: "원투펀치",
+    done: false,
+  },
+  {
+    id: 3,
+    text: "쓰리포펀치",
+    done: false,
+  },
+];
+
+// 리듀서 작성
+export default function todos(
+  state: TodosState = initialState,
+  action: TodosAction // 여기서 ReturnType<typeof ...> 로 선언했던 타입을 사용합니다.
+) {
+  switch (action.type) {
+    case ADD_TODO:
+      return state.concat({
+        id: action.payload.id,
+        text: action.payload.text,
+        done: false,
+      });
+    case TOGGLE_TODO:
+      return state.map((todo) =>
+        todo.id === action.payload ? { ...todo, done: !todo.done } : todo
+      );
+    case REMOVE_TODO:
+      // payload 가 number 인 것이 유추됩니다.
+      return state.filter((todo) => todo.id !== action.payload);
+    default:
+      return state;
+  }
+}
+```
+
+- 주의 깊게 봐야 할 부분은 관리해야 할 값이 배열일 경우 해당 배열에 대한 타입을 위에서 한 번 더 선언해준다는 것입니다
+- 이해를 돕기 위해 state 가 number인 상태 값의 코드를 보여드리겠습니다.
+
+```tsx
+
+🐕 initialState 의 타입이 하나일 때
+
+type CounterState = {
+  count: number;
+};
+
+const initialState: CounterState = {
+  count: 0,
+};
+```
+
+- 위처럼 initialState 일반적인 number, string, boolean 값이라면 해당 타입을 한 번 더 지정해줄 필요가 없습니다.
+- 하지만 타입이 배열 객체라면 그에 대한 타입을 먼저 선언해주어야 합니다.
+
+```tsx
+🐈 initialState 의 타입이 배열 객체일 때
+
+export type Todo = {
+  id: number;
+  text: string;
+  done: boolean;
+};
+
+export type TodosState = Todo[];
+
+const initialState: TodosState = [
+  {
+    id: 1,
+    text: "냥냥펀치",
+    done: false,
+  },
+  {
+    id: 2,
+    text: "원투펀치",
+    done: false,
+  },
+  {
+    id: 3,
+    text: "쓰리포펀치",
+    done: false,
+  },
+];
+
+// 프로퍼티인 id, text, done 에 대한 타입을 먼저 선언해줍니다.
+```
+
+- 이제 위에서 만든 todos 모듈을 rootReducer에 보냅니다
+- 하나의 스토어`(=store)`만 가진다는 규칙에 따라, 리듀서가 많아질 경우 이렇게 combine 시켜서 사용합니다
+
+```tsx
+import { combineReducers } from "redux";
+import todos from "./todos";
+const rootReducer = combineReducers({
+  todos,
+});
+
+// 루트 리듀서를 내보내주세요.
+export default rootReducer;
+
+// 루트 리듀서의 반환값를 유추해줍니다
+// 추후 이 타입을 컨테이너 컴포넌트에서 불러와서 사용해야 하므로 내보내줍니다.
+export type RootState = ReturnType<typeof rootReducer>;
+```
+
+- 다시 TodoApp으로 들어와 현재 todos의 타입을 확인해봅시다.
+
+<img src="./images/todo_rootState.PNG" alt="todo_rootState"/>
+
+- 타입 추론에 의해 todos가 자동으로 <b>const todos: TodosState</b> 형태를 띄는 것을 알 수 있습니다
+- 하위 컴포넌트인 &lt;TodoInsert&gt; , &lt;TodoList&gt; 의 경우 props로 함수를 전달하는 것 외에는 기존 방식과 같습니다
+- 따라서 해당 함수(onInsert, onToggle, onRemove)가 실행 됐을 때, dispatch 가 발생하며 요청된 액션에 따라 state의 값이 변화한다는 흐름을 캐치하면 충분합니다.
+- reducer에서 concat을 통해 state의 값이 변경된다면, virtual DOM이 이를 감지하고 변화된 state를 렌더링해줄 것입니다.
+- 그렇다면 우리는 그 변화를 눈으로 찾아볼 수 있을 것입니다.

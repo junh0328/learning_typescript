@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 type TodoInsertProps = {
   onInsert: (text: string) => void;
@@ -9,12 +9,12 @@ const TodoInsert = ({ onInsert }: TodoInsertProps) => {
   const [value, setValue] = useState('');
 
   // useState를 통해 state인 value 값을 상태관리 하기 위해서 onChange 프로퍼티를 이용한다.
-  const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   }, []);
 
   const onSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       onInsert(value);
       setValue('');
