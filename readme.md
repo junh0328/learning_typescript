@@ -1,7 +1,15 @@
+## 👉🏼 Next is ....
+
+<a href="./ReactByTS/readme.md">리액트에 타입스크립트 한 방울 넣기</a>
+
 ## 👉🏼 참고자료
 
 이 글을 '땅콩코딩'님의 타입스크립트 강의를 바탕으로 작성된 글입니다.<br/>
-<a href="https://www.youtube.com/channel/UCQrIKpEc3FFO1KJ5zkoIcYA" taget="_blank">타입스크립트 강의 바로가기</a>
+
+> 참고자료 : <a href="https://www.youtube.com/channel/UCQrIKpEc3FFO1KJ5zkoIcYA">타입스크립트 강의 바로가기</a><br/>
+> 참고자료 : <a href="https://ahnheejong.gitbook.io/ts-for-jsdev/">자바스크립트 개발자를 위한 타입스크립트</a></br>
+> 참고자료 : <a href="https://typescript-kr.github.io/">타입스크립트 핸드북</a></br>
+> 참고자료 : <a href="https://react.vlpt.us/using-typescript/">벨로퍼트님의 리액트 + 타입스크립트</a></br>
 
 ## 👉🏼 사용한 extension
 

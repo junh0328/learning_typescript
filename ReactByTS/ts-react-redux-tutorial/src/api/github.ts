@@ -5,6 +5,11 @@ export async function getUserProfile(username: string) {
   const response = await axios.get<GithubProfile>(`https://api.github.com/users/${username}`);
   return response.data; // 데이터 값을 바로 반환하도록 처리합니다.
 }
+/*
+ 1. 사용자에게 입력 받은 username를 바탕으로 깃허브에서 제공하는 user 검색 api를 통해 username에 해당하는 정보를 요청합니다
+ 2. 사전에 설정한 인터페이스인 GithubProfile을 제네릭으로 사용하여 응답받은 데이터의 타입을 지정해줍니다.
+ 3. 제네릭이기 때문에 GithubProfile 안에 타입이 설정된 데이터만 사용할 수 있으며, 선별적으로 사용할 수도 있습니다.
+*/
 
 export interface GithubProfile {
   login: string;

@@ -339,7 +339,7 @@ export default MyForm;
 
 <p>매우 까다로운 과정일 수 있지만 이 흐름을 이해한다면, 상태관리 전까지 리액트에 타입스크립트를 적용하는 것은 문제가 없을 것입니다!</p>
 
-## 📍 2. todo-redux (타입스크립트에서 리덕스 프로처럼 사용하긴)
+## 📍 2. todo-redux (타입스크립트에서 리덕스 프로처럼 사용하기)
 
 - <a href="https://github.com/erikras/ducks-modular-redux">Ducks 패턴</a>을 사용하여 todolist에 리덕스 형식을 적용합니다
 - 즉, 액션타입, 액션생성함수, 리듀서를 모두 한 파일에 작성하겠다는 의미입니다
@@ -554,12 +554,24 @@ export default rootReducer;
 export type RootState = ReturnType<typeof rootReducer>;
 ```
 
-- 다시 TodoApp으로 들어와 현재 todos의 타입을 확인해봅시다.
+- 다시 TodoApp으로 들어와 현재 todos의 타입을 확인해봅시다
 
 <img src="./images/todo_rootState.PNG" alt="todo_rootState"/>
 
 - 타입 추론에 의해 todos가 자동으로 <b>const todos: TodosState</b> 형태를 띄는 것을 알 수 있습니다
 - 하위 컴포넌트인 &lt;TodoInsert&gt; , &lt;TodoList&gt; 의 경우 props로 함수를 전달하는 것 외에는 기존 방식과 같습니다
-- 따라서 해당 함수(onInsert, onToggle, onRemove)가 실행 됐을 때, dispatch 가 발생하며 요청된 액션에 따라 state의 값이 변화한다는 흐름을 캐치하면 충분합니다.
-- reducer에서 concat을 통해 state의 값이 변경된다면, virtual DOM이 이를 감지하고 변화된 state를 렌더링해줄 것입니다.
-- 그렇다면 우리는 그 변화를 눈으로 찾아볼 수 있을 것입니다.
+- 따라서 해당 함수(onInsert, onToggle, onRemove)가 실행 됐을 때, dispatch 가 발생하며 요청된 액션에 따라 state의 값이 변화한다는 흐름을 캐치하면 충분합니다
+- reducer에서 concat을 통해 state의 값이 변경된다면, virtual DOM이 이를 감지하고 변화된 state를 렌더링해줄 것입니다
+- 그렇다면 우리는 그 변화를 눈으로 찾아볼 수 있을 것입니다
+
+## 📍 3. ts-react-redux-tutorial 프로젝트 (redux에 미들웨어 redux-thunk 사용하기)
+
+> 리덕스 미들웨어를 다루는 방법을 잘 모르신다면 <a href="https://react.vlpt.us/redux-middleware/">리덕스 미들웨어 튜토리얼</a>을 먼저 읽어주세요
+
+<p>간단하게 말하자면 리덕스 미들웨어를 사용하면 액션이 디스패치 된 다음, 리듀서에서 해당 액션을 받아와서 업데이트하기 전에 추가적인 작업을 할 수 있습니다.</p>
+
+- 특정 조건에 따라 액션이 무시되게 만들 수 있습니다
+- 액션을 콘솔에 출력하거나, 서버쪽에 로깅을 할 수 있습니다
+- 액션이 디스패치 됐을 때 이를 수정해서 리듀서에게 전달되도록 할 수 있습니다
+- 특정 액션이 발생했을 때 이에 기반하여 다른 액션이 발생되도록 할 수 있습니다
+- 특정 액션이 발생했을 때 특정 자바스크립트 함수를 실행시킬 수 있습니다
