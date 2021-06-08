@@ -11,7 +11,9 @@ type GreetingsProps = {
 2.{ name : string, optional: string, onClick : (name:string) => void } 라고 중괄호 내에서 타입을 명시해도 되지만, 타입을 만들어 넣어주었습니다
 3. onClick() 의 경우, 기존 함수를 상위 컴포넌트에서 전달 받았는데, 이를 그대로 호출하여 사용할수는 없습니다. 재정의가 필요합니다.
 */
-const Greetings: React.FC<GreetingsProps> = ({ name, optional, onClick }) => {
+function Greetings(props: GreetingsProps) {
+  const { name, optional, onClick } = props;
+
   const handleClick = () => {
     onClick(name);
   };
@@ -24,6 +26,6 @@ const Greetings: React.FC<GreetingsProps> = ({ name, optional, onClick }) => {
       </div>
     </div>
   );
-};
+}
 
 export default Greetings;

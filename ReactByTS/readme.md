@@ -151,6 +151,38 @@ function Greetings({ name, optional, onClick }: GreetingsProps) {
 export default Greetings;
 ```
 
+### 📍 +) function 키워드를 통해 작성하는 경우 (props로 전달 후에 구조분해 할당 하는 방법)
+
+> 팀원 분이 쓰시는 방법을 추가해 보았습니다. 개인적으로는 이 방법이 제일 편한듯 합니다.<br/>
+> 원하는 props {name, optional, onClick } 만 뽑아서 사용할 수 있기 때문입니다.
+
+```tsx
+import React from "react";
+
+type GreetingsProps = {
+  name: string;
+  optional?: string;
+  onClick: (name: string) => void;
+};
+
+function Greetings(props: GreetingsProps) {
+  const { name, optional, onClick } = props;
+
+  const handleClick = () => {
+    onClick(name);
+  };
+  return (
+    <div>
+      Hello, {name}
+      {optional && <p> {optional}</p>}
+      <div>
+        <button onClick={handleClick}>Click Me</button>
+      </div>
+    </div>
+  );
+}
+```
+
 ## 📍 1.2) Counter.tsx
 
 ```tsx
