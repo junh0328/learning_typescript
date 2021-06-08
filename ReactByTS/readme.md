@@ -126,6 +126,59 @@ export default Greetings;
 ```
 
 <p><b>: React.FC</b> 를 사용할 때는 props의 타입을 Generics로 넣어서 사용합니다.</p>
+<p>첫 번째는, props에 기본적으로 <b>children</b>이 들어가 있다는 것입니다.</p>
+<p>children 이 옵셔널 형태로 들어가있다보니까 어찌 보면 컴포넌트의 props 의 타입이 명백하지 않습니다. 예를 들어 어떤 컴포넌트는 children이 무조건 있어야 하는 경우도 있을 것이고, 어떤 컴포넌트는 children 이 들어가면 안되는 경우도 있을 것입니다.</p>
+
+### +) 📍 화살표 함수를 통해 React.FC를 사용하는 경우 (children 사용하기)
+
+```tsx
+case 1: 기존코드
+<Greetings name="준희" optional="옵션입니다" onClick={onClick}/>
+
+case 2: children 형식을 통해 하위 컴포넌트에 전달하는 경우
+<Greetings name="준희" optional="옵션입니다" onClick={onClick}>
+  췰드런입니다
+</Greetings>
+```
+
+<p>React:FC 를 사용하게 되면, props로 전달받은 children 프로퍼티에 대해 타입 설정을 하지 않고 사용할 수 있습니다. </p>
+
+```tsx
+type GreetingsProps = {
+  name: string;
+  optional?: string;
+  onClick: (name: string) => void;
+};
+
+const Greetings: React.FC<GreetingsProps> = ({
+  children,
+  name,
+  onClick,
+  optional,
+}) => {
+  const handleClick = () => {
+    onClick(name);
+  };
+
+  //<Greetings>...</Greetings> 사이에 넘겨준 값을 children 으로 활용하여 자식 컴포넌트에서 사용할 수 있습니다.
+
+  return (
+    <div>
+      <p>{children}</p>
+      {/* 전달 받은 children props를 {children} 을 통해 사용하였습니다. */}
+      Hello, {name}
+      {optional && <p> {optional}</p>}
+      <div>
+        <button onClick={handleClick}>Click Me</button>
+      </div>
+    </div>
+  );
+};
+
+export default Greetings;
+```
+
+<img src="./images/childrenProps.png" alt="UsingChildrenProps">
 
 ### 📍 function 키워드를 통해 작성하는 경우
 
