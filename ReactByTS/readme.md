@@ -12,6 +12,7 @@
 - [todolist](#-todolist)
 - [todo-redux](#-todo-redux)
 - [redux-thunk](#-redux-thunk)
+- [redux-saga](#-redux-saga)
 
 ## 📍 todolist
 
@@ -97,7 +98,30 @@ export default Greetings;
 /*
 <div>
     <button onClick={onClick(name)}>Click Me</button> 과 같은 형식으로 사용할 수 없습니다.
+    만약 파라미터로 값을 넘겨주기 싶다면 화살표 함수를 사용해야 합니다
 </div>
+*/
+
+/*
+...
+  const handleClick = (name: string) => { // 파라미터에 대한 타입도 지정해줘야 합니다
+    onClick(name);
+  };
+  return (
+    <div>
+      Hello, {name}
+      {optional && <p> {optional}</p>}
+      <div>
+        <button
+          onClick={() => {
+            handleClick(name);
+          }}
+        >
+          Click Me
+        </button>
+      </div>
+    </div>
+  );
 */
 ```
 
@@ -668,3 +692,5 @@ export type RootState = ReturnType<typeof rootReducer>;
 - 액션이 디스패치 됐을 때 이를 수정해서 리듀서에게 전달되도록 할 수 있습니다
 - 특정 액션이 발생했을 때 이에 기반하여 다른 액션이 발생되도록 할 수 있습니다
 - 특정 액션이 발생했을 때 특정 자바스크립트 함수를 실행시킬 수 있습니다
+
+## 📍 redux saga

@@ -14,7 +14,7 @@ type GreetingsProps = {
 function Greetings(props: GreetingsProps) {
   const { name, optional, onClick } = props;
 
-  const handleClick = () => {
+  const handleClick = (name: string) => {
     onClick(name);
   };
   return (
@@ -22,7 +22,13 @@ function Greetings(props: GreetingsProps) {
       Hello, {name}
       {optional && <p> {optional}</p>}
       <div>
-        <button onClick={handleClick}>Click Me</button>
+        <button
+          onClick={() => {
+            handleClick(name);
+          }}
+        >
+          Click Me
+        </button>
       </div>
     </div>
   );
