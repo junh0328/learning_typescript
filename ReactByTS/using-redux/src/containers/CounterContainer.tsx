@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../modules';
-import { increase, decrease, increaseBy } from '../modules/counter';
+import { increase, decrease, increaseBy, reset } from '../modules/counter';
 import Counter from '../components/Counter';
 
 const CounterContainer = () => {
@@ -24,12 +24,17 @@ const CounterContainer = () => {
     dispatch(increaseBy(diff));
   };
 
+  const onReset = () => {
+    dispatch(reset());
+  };
+
   return (
     <Counter
       count={count}
       onIncrease={onIncrease}
       onDecrease={onDecrease}
       onIncreaseBy={onIncreaseBy}
+      onReset={onReset}
     />
   );
 };
