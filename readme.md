@@ -11,6 +11,18 @@
 > 참고자료 : <a href="https://typescript-kr.github.io/">타입스크립트 핸드북</a></br>
 > 참고자료 : <a href="https://react.vlpt.us/using-typescript/">벨로퍼트님의 리액트 + 타입스크립트</a></br>
 
+## 👉🏼 목차
+
+- [특징](#-특징)
+- [사용법](#-사용법)
+- [타입 추론](#-타입-추론)
+- [타입 명시](#-타입-명시)
+- [인터페이스로 객체 구조 정의하기](#-인터페이스로-객체-구조-정의하기)
+- [열거형과 리터럴 타입](#-열거형과-리터럴-타입)
+- [Any Union Type Type Aliases Type Guards](#-Any-Union-Type-Type-Aliases-Type-Guards)
+- [함수 타이핑 선택적 매개 변수와 기본 매개 변수](#-함수-타이핑-선택적-매개-변수와-기본-매개-변수)
+- [객체 지향 프로그래밍 클래스와 오브젝트 관계 파헤치기](#-객체-지향-프로그래밍-클래스와-오브젝트-관계-파헤치기)
+
 ## 👉🏼 사용한 extension
 
 - prettier
@@ -60,7 +72,9 @@ tsc -w app.ts // 해당 파일
 
 <hr/>
 
-## 👉🏼 타입 추론(Type Inference)
+## 👉🏼 타입 추론
+
+> (Type Inference)
 
 ```js
 let a = 5;
@@ -265,7 +279,7 @@ Cannot assign to 'studentID' because it is a read-only property.
 
 <hr/>
 
-## 👉🏼 열거형(Enum)과 리터럴 타입
+## 👉🏼 열거형과 리터럴 타입
 
 프로퍼티의 값을 단순히 타입으로 지정하는 것이 아닌, 실제 값만 받고 싶을 때 우리는 열거형(enum)과 리터럴 타입을 이용하여 프로퍼티에 지정될 키 값을 미리 정해줄 수 있습니다.<br/>
 이렇게 정해진 프로퍼티 키 값으로만 할당을 해줘야 오류가 나지 않고 실행될 수 있습니다.
@@ -414,7 +428,7 @@ function getStudentDetails(studentID: number): Student {
 
 <hr/>
 
-## 👉🏼 Any, Union Type, Type Aliases & Type Guards
+## 👉🏼 Any Union Type Type Aliases Type Guards
 
 ### any
 
@@ -499,7 +513,7 @@ setItemPrice(50);
 
 <hr/>
 
-## 👉🏼 함수 타이핑, 선택적 매개 변수와 기본 매개 변수
+## 👉🏼 함수 타이핑 선택적 매개 변수와 기본 매개 변수
 
 이번에는 함수에 타입을 정의해주는 것을 배워보도록 하겠습니다. <br/>
 
@@ -735,7 +749,7 @@ export const increase = () => {
 
 <hr/>
 
-## 👉🏼 객체 지향 프로그래밍, 클래스와 오브젝트 관계 파헤치기
+## 👉🏼 객체 지향 프로그래밍 클래스와 오브젝트 관계 파헤치기
 
 객체 지향 프로그래밍에서 클래스와 오브젝트(객체)는 뗄래야 뗄 수 없는 관계에 있습니다.<br/>
 객체는 클래스(class)를 통해서 만들어 질 수 있고, 클래스는 객체가 어떤 모습을 가질 지를 정의하고, 묘사하기 때문입니다.
