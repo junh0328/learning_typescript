@@ -7,7 +7,13 @@
 - 기존 공부를 하면서 만들어 둔 폴더인 todolist, todo-redux, using-thunk에 대해 복기하며, 실제 프로젝트에서 느낀 어려움과 해결방안에 대해 공부합니다.
 - react 프로젝트 작업 시에 함수 선언식과 함수 표현식을 상황에 따라 모두 사용하게 되는데, 이때 전달되는 props 와 타입 적용 시에 느꼈던 벽을 허물고 깊게 공부할 예정입니다.
 
-## 📍 1. todolist
+## 목차
+
+- [todolist](#-todolist)
+- [todo-redux](#-todo-redux)
+- [redux-thunk](#-redux-thunk)
+
+## 📍 todolist
 
 ```tsx
 
@@ -424,7 +430,9 @@ export default MyForm;
 
 <p>매우 까다로운 과정일 수 있지만 이 흐름을 이해한다면, 상태관리 전까지 리액트에 타입스크립트를 적용하는 것은 문제가 없을 것입니다!</p>
 
-## 📍 2. todo-redux (타입스크립트에서 리덕스 프로처럼 사용하기)
+## 📍 todo redux
+
+타입스크립트에서 리덕스 프로처럼 사용하기 !
 
 - <a href="https://github.com/erikras/ducks-modular-redux">Ducks 패턴</a>을 사용하여 todolist에 리덕스 형식을 적용합니다
 - 즉, 액션타입, 액션생성함수, 리듀서를 모두 한 파일에 작성하겠다는 의미입니다
@@ -649,7 +657,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 - reducer에서 concat을 통해 state의 값이 변경된다면, virtual DOM이 이를 감지하고 변화된 state를 렌더링해줄 것입니다
 - 그렇다면 우리는 그 변화를 눈으로 찾아볼 수 있을 것입니다
 
-## 📍 3. ts-react-redux-tutorial 프로젝트 (redux에 미들웨어 redux-thunk 사용하기)
+## 📍 redux thunk
 
 > 리덕스 미들웨어를 다루는 방법을 잘 모르신다면 <a href="https://react.vlpt.us/redux-middleware/">리덕스 미들웨어 튜토리얼</a>을 먼저 읽어주세요
 
