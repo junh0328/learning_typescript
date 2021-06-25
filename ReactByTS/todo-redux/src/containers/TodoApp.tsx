@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../modules';
 import { toggleTodo, removeTodo, addTodo } from '../modules/todos';
@@ -9,10 +9,6 @@ function TodoApp() {
   const todos = useSelector((state: RootState) => state.todos);
   const dispatch = useDispatch();
 
-  const onInsert = (text: string) => {
-    dispatch(addTodo(text));
-  };
-
   const onToggle = (id: number) => {
     dispatch(toggleTodo(id));
   };
@@ -20,6 +16,13 @@ function TodoApp() {
   const onRemove = (id: number) => {
     dispatch(removeTodo(id));
   };
+
+  const onInsert = useCallback(
+    (text: string) => {
+      dispatch(addTodo(text));
+    },
+    [dispatch],
+  );
 
   return (
     <>
