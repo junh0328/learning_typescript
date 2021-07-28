@@ -1,14 +1,14 @@
-import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import DataForm from "../../components/DataForm";
 import HeaderMain from "../../components/HeaderMain";
-import { todoType } from "../../types";
+import { RootState } from "../../reducers";
+import { FETCHING_TODOS_REQUEST } from "../../reducers/todos";
 import { MainWrapper } from "./style";
 
 function Main() {
-  const [datas, setDatas] = useState<todoType[]>([]);
-
-  const API_URL = `https://jsonplaceholder.typicode.com/todos`;
+  const dispatch = useDispatch();
+  const { todos } = useSelector((state: RootState) => state.todos);
 
   const BtnStyle = useMemo(
     () => ({
@@ -23,19 +23,15 @@ function Main() {
   );
 
   useEffect(() => {
-    if (datas.length) console.log(datas);
-  }, [datas]);
+    if (todos.length) console.log("todos", todos);
+  }, [todos]);
 
-  const getAPI = useCallback(
-    async (e) => {
-      e.preventDefault();
-
-      const result = await axios.get(API_URL);
-      // console.log("result.data: ", result.data.slice(1, 30));
-      setDatas(result.data.slice(1, 30));
-    },
-    [API_URL]
-  );
+  const getAPI = () => {
+    console.log("todos_request_start!");
+    dispatch({
+      type: FETCHING_TODOS_REQUEST,
+    });
+  };
 
   return (
     <MainWrapper>
@@ -43,7 +39,7 @@ function Main() {
       <button onClick={getAPI} style={BtnStyle}>
         Fetching Data!
       </button>
-      <DataForm datas={datas} />
+      <DataForm datas={todos} />
     </MainWrapper>
   );
 }
