@@ -44,7 +44,7 @@ function Main() {
   return (
     <MainWrapper>
       <HeaderMain />
-      {todos.length && <DataForm datas={todos} />}
+      <DataForm datas={todos} />
       <BtnWrapper>
         <button onClick={getAPI}>Fetching Data!</button>
       </BtnWrapper>

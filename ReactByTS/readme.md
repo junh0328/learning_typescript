@@ -705,7 +705,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 
 <p>팀 프로젝트를 새롭게 들어가면서, 타입스크립트를 기반으로 한 리덕스 리덕스 사가 미들웨어를 통해 상태관리를 하기로 결정되었습니다. 그에 따라 예전 팀 프로젝트 때 공부했던 내용을 바탕으로 보일러 플레이트를 만들어 보았습니다.</p>
 
-<a href="https://github.com/junh0328/learning_typescript/commits?author=junh0328&since=2021-07-27&until=2021-07-28">리덕스-사가 보일러플레이트 작업 커밋 순으로 보기</a>
+<a href="https://github.com/junh0328/learning_typescript/commits?author=junh0328&since=2021-07-28&until=2021-07-29">리덕스-사가 보일러플레이트 작업 커밋 순으로 보기</a>
 
 ### 순서
 
@@ -714,6 +714,8 @@ export type RootState = ReturnType<typeof rootReducer>;
 2. axios 라이브러리를 통해 더미 API 데이터 패칭 확인 및 렌더링
 3. 리듀서, 리덕스, 리덕스 미들웨어 (redux-saga) 도입하기
 4. 결과 확인하기
+
+📍 5. 버튼 이벤트 요청에 따라 동적으로 추가 데이터 가져오기
 ```
 
 <p>js 환경에서 충분히 익숙해졌기 때문에, 이번에는 타입과 관련된 내용을 주로 다뤄보겠습니다.</p>
@@ -895,4 +897,496 @@ type todoType = {
 
 ### 3.리듀서, 리덕스, 리덕스 미들웨어 (redux-saga) 도입하기
 
+> <a href="https://github.com/junh0328/learning_typescript/commit/58272ad3f28214116e832158cdc3265f3a49bf0f">작업 커밋 바로가기</a>
+
+<p>먼저 타입스크립트를 포함한 리덕스 미들웨어를 적용하기 위해 다운받은 라이브러리는 다음과 같습니다.</p>
+
+```
+@types/react-redux
+immer
+react-redux
+redux-devtools-extenstion
+redux-saga
+```
+
+<p>리듀서에서 상태를 업데이트할 때는 불변성을 지켜야 하기 때문에 spread 연산자 (...)와 배열의 내장 함수를 활용했습니다. 하지만 immer를 적용한다면 보다 쉽게 상태를 업데이트할 수 있습니다.</p>
+
+<p>사람마다 다르긴 하지만 저는 다음과 같은 순서로 전역객체 관리 코드를 구성합니다. </p>
+
+```
+1. 리듀서 작성 (index 리듀서> 기능별 리듀서)
+2. 사가 코드 작성 (index 사가 > 기능별 사가)
+3. index.tsx에서 리듀서 및 사가 적용
+4. 페이지 및 컴포넌트에서 액션 또는 액션 생성함수 적용
+5. 콘솔창에서 결과값 확인
+```
+
+### 1) 리듀서 작성하기
+
+<p>📍 먼저 모든 리듀서 함수들을 combine 시킬 reducers/index.tsx를 작성합니다.</p>
+
+```tsx
+import { combineReducers } from "redux";
+import todos from "./todos";
+
+const rootReducer = combineReducers({
+  todos,
+});
+
+export default rootReducer;
+
+export type RootState = ReturnType<typeof rootReducer>;
+```
+
+<p>물론 아직까지는 todos 리듀서가 없지만, 해당부분을 비워둔 채로 작성한 다음 import 하여 사용하면 됩니다.</p>
+
+<p>📍 후에 보일러 플레이트의 메인 작업인 todos 리듀서 관련 리듀서를 작성합니다. 저는 ducks 패턴을 통해, 각 기능별 리듀서에 모든 함수들을 모아주었습니다. 코드가 길어질 수 있지만, 대부분 반복되는 코드이고 오히려 actions와 같이 폴더로 빼는 것보다 처음에는 이해하기 더 쉽다고 판단하였습니다.</p>
+
+```tsx
+import produce from "immer";
+import { todoType } from "../../types";
+
+// initialState 타입 정의
+export interface todosIntialState {
+  todos: todoType[];
+
+  fetchTodosLoading: boolean;
+  fetchTodosSuccess: boolean;
+  fetchTodosFailure: null | Error;
+}
+
+// initialState 정의
+export const initialState: todosIntialState = {
+  todos: [],
+
+  fetchTodosLoading: false,
+  fetchTodosSuccess: false,
+  fetchTodosFailure: null,
+};
+
+// 액션 정의
+export const FETCHING_TODOS_REQUEST = "FETCHING_TODOS_REQUEST" as const;
+export const FETCHING_TODOS_SUCCESS = "FETCHING_TODOS_SUCCESS" as const;
+export const FETCHING_TODOS_FAILURE = "FETCHING_TODOS_FAILURE" as const;
+
+// 액션에 대한 타입 정의;
+export interface FetchingTodosRequest {
+  type: typeof FETCHING_TODOS_REQUEST;
+}
+
+export interface FetchingTodosSuccess {
+  type: typeof FETCHING_TODOS_SUCCESS;
+  todos: todoType;
+  data: [];
+}
+
+export interface FetchingTodosFailure {
+  type: typeof FETCHING_TODOS_FAILURE;
+  error: Error;
+}
+
+// 리듀서 안에 들어갈 액션 타입에 대한 액션 생성 함수 정의
+export const fetchingToddsRequest = (): FetchingTodosRequest => ({
+  type: FETCHING_TODOS_REQUEST,
+});
+
+export const fetchingToddsSuccess = (
+  todos: todoType,
+  data: []
+): FetchingTodosSuccess => ({
+  type: FETCHING_TODOS_SUCCESS,
+  todos,
+  data,
+});
+
+export const fetchingToddsFailure = (error: Error): FetchingTodosFailure => ({
+  type: FETCHING_TODOS_FAILURE,
+  error,
+});
+
+export type FetchingTodos =
+  | ReturnType<typeof fetchingToddsRequest>
+  | ReturnType<typeof fetchingToddsSuccess>
+  | ReturnType<typeof fetchingToddsFailure>;
+
+// export 시킬 todos 리듀서
+const todos = (state: todosIntialState = initialState, action: FetchingTodos) =>
+  produce(state, (draft) => {
+    switch (action.type) {
+      case FETCHING_TODOS_REQUEST: {
+        draft.fetchTodosLoading = true;
+        draft.fetchTodosLoading = false;
+        break;
+      }
+      case FETCHING_TODOS_SUCCESS: {
+        draft.fetchTodosLoading = false;
+        draft.fetchTodosSuccess = true;
+        draft.todos = draft.todos.concat(action.data);
+        break;
+      }
+      case FETCHING_TODOS_FAILURE: {
+        draft.fetchTodosSuccess = false;
+        draft.fetchTodosFailure = action.error;
+        break;
+      }
+      default:
+        return state;
+    }
+  });
+
+export default todos;
+```
+
+<p>JavaSript 환경과 typescript 환경의 가장 큰 차이점은 리듀서의 case 별 action에 대해서도 타입을 정해줘야 사용할 수 있다는 것입니다.</p>
+
+```tsx
+(state: todosIntialState = initialState, action: FetchingTodos))
+```
+
+<p>해당 부분을 보시면 아시겠지만, state와 action 모두 타입을 지정해주었습니다. 쉽게 생각해서 기존에 작업대로, intialState와 action을 먼저 선언한 후에 후에 해당 객체에 대한 타입을 정해주는 순으로 가면 좋을 것 같습니다.</p>
+
+<p>...Loading, ...Success, ...Failure는 초기값을 boolean으로 넣어주었고 그 외에는 FETCHING_TODOS_SUCCESS에서 관리할 todos에 대한 타입만 명시해주면 됩니다.</p>
+
+### 2) 사가 코드 작성하기
+
+<p>사가 코드 또한 index > 기능별 사가 모듈 순으로 작성합니다. 📁sagas/index.tsx</p>
+
+```tsx
+import { all, fork } from "redux-saga/effects";
+
+import todoSaga from "./todos";
+
+export default function* rootSaga() {
+  yield all([fork(todoSaga)]);
+}
+```
+
+<p>redux-saga의 이펙트와 generator에 대한 내용은 js 환경에서 충분히 다뤘다고 생각하고 넘기도록 하겠습니다. 후에 📁sagas/todos 를 작성합니다.</p>
+
+```tsx
+import { put } from "@redux-saga/core/effects";
+import axios from "axios";
+import { all, call, fork, takeLatest } from "redux-saga/effects";
+import { API_URL } from "../../apis";
+import {
+  FetchingTodosRequest,
+  FETCHING_TODOS_FAILURE,
+  FETCHING_TODOS_REQUEST,
+  FETCHING_TODOS_SUCCESS,
+} from "../../reducers/todos";
+import { todoType } from "../../types";
+
+type resultType = {
+  result: todoType[];
+};
+
+async function fetchTodosAPI() {
+  try {
+    const response = await axios.get(API_URL);
+    // console.log("result.data: ", result.data.slice(1, 30));
+    const result = response.data.slice(1, 30);
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function* fetchTodos(action: FetchingTodosRequest) {
+  // console.log("action 감지: ", action);
+  try {
+    const result: resultType = yield call(fetchTodosAPI);
+    // console.log('result 확인: ', result);
+    yield put({
+      type: FETCHING_TODOS_SUCCESS,
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: FETCHING_TODOS_FAILURE,
+      console: err.response,
+    });
+  }
+}
+
+function* watchFetchTodos() {
+  yield takeLatest(FETCHING_TODOS_REQUEST, fetchTodos);
+}
+
+export default function* todoSaga() {
+  yield all([fork(watchFetchTodos)]);
+}
+```
+
+<p>JavaScript 환경과 TypeScript 환경에서의 가장 큰 차이점은 action과 action 내부에 포함된 data에 대한 타입을 명시해줘야 한다는 것입니다. 하지만 걱정할 필요가 없습니다. 이미 리듀서에서 작성을 완료하였기 때문에, 해당 내용을 import 하여 사용하면 됩니다.</p>
+
+### 3) index.tsx에 적용하기
+
+<p>사가와 리듀서를 사용하겠다는 선언들을 가장 상위 디렉토리인 📁/src/index.tsx에 선언해줍니다. 기존 js 환경에서 사용하던 것과 다른 내용은 없습니다. 추가적으로 크롬 확장 프로그램인 redux-devtools를 사용하여, 개발자 도구에서 사가 이펙트들을 추적하도록 하겠습니다.</p>
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { createStore, applyMiddleware } from "redux";
+import createSagaMiddleware from "redux-saga";
+import rootReducer from "./reducers";
+import rootSaga from "./sagas";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { Provider } from "react-redux";
+
+const sagaMiddleware = createSagaMiddleware();
+
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(sagaMiddleware))
+);
+
+sagaMiddleware.run(rootSaga);
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+```
+
+### 4) 각 페이지 및 컴포넌트에 만든 함수 적용하기
+
+<p>이제 기존에 useState와 axios로 페이지에서 직접 보내줬던 내용들을 redux에서 제공하는 useDispatch와 useSelector를 통해 전역객체로 관리해보겠습니다.</p>
+
+```tsx
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import DataForm from "../../components/DataForm";
+import HeaderMain from "../../components/HeaderMain";
+import { RootState } from "../../reducers";
+import { FETCHING_TODOS_REQUEST } from "../../reducers/todos";
+import { MainWrapper } from "./style";
+
+function Main() {
+  const dispatch = useDispatch();
+  const { todos } = useSelector((state: RootState) => state.todos);
+
+  const BtnStyle = useMemo(
+    () => ({
+      cursor: "pointer",
+      fontSize: "1rem",
+      padding: 10,
+      border: "none",
+      background: "hotPink",
+      color: "black",
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (todos.length) console.log("todos", todos);
+  }, [todos]);
+
+  const getAPI = () => {
+    console.log("todos_request_start!");
+    dispatch({
+      type: FETCHING_TODOS_REQUEST,
+    });
+  };
+
+  return (
+    <MainWrapper>
+      <HeaderMain />
+      <button onClick={getAPI} style={BtnStyle}>
+        Fetching Data!
+      </button>
+      <DataForm datas={todos} />
+    </MainWrapper>
+  );
+}
+```
+
 ### 4.결과 확인하기
+
+<p>마지막으로 코드가 정상적으로 작동하는지 확인해보겠습니다.</p>
+
+#### 버튼 이벤트 클릭 전
+
+<img src="./images/sagaTemplate1.png" alt="sagaTemplate1">
+
+#### 버튼 이벤트 클릭 후
+
+<img src="./images/sagaTemplate2.png" alt="sagaTemplate2">
+
+### 5. 버튼 이벤트 요청에 따라 동적으로 추가 데이터 가져오기
+
+<p>4 단계까지는 누구다 도전하고 따라 칠 수 있는 코드입니다. 하지만, 브라우저에서 한 번에 모든 데이터(여기서는 200개의 배열)를 가지고 있는다면, 로딩 속도가 늦어지고 곧 사용자의 불만을 일으킬 수 있습니다. 그렇기 때문에 초기 로딩 속도를 높이기 위해서 데이터를 동적으로 가져올 수 있는 작업이 필요합니다.</p>
+
+<p>순서는 다음과 같습니다.</p>
+
+```
+1. useState를 통해 FETCHING_TODOS_REQUEST(액션 함수)와 함께 보낼 인덱스 값 선언하기
+2. FETCHING_TODOS_REQUEST과 함께 데이터로 1번의 데이터 보내기
+3. 리듀서 및 사가에서 1번 과정의 데이터에 대한 타입 선언하기
+4. 정상적으로 동작한다면 useState를 통해 상태값 업데이트하기
+5. 결과 확인하기
+```
+
+### useState를 통해 FETCHING_TODOS_REQUEST(액션 함수)와 함께 보낼 인덱스 값 선언하기
+
+<p>기존에 saga/todos에서 데이터를 가져올 때 정적으로 [1,20]까지의 데이터를 가져오기로 선언하였습니다.</p>
+
+```tsx
+async function fetchTodosAPI() {
+  try {
+    const response = await axios.get(API_URL);
+    // console.log("result.data: ", result.data.slice(1, 30));
+    const result = response.data.slice(1, 30);
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+```
+
+<p>위 함수에서 slice에 담길 인덱스를 useState로 관리하여 동적으로 변경될 수 있게 작업할 것입니다. 우선 1과 30을 대체할 useState를 선언합니다.</p>
+
+```tsx
+// 배열의 첫 번째 인덱스
+const [firstNum, setFirstNum] = useState(0);
+// 배열의 마지막 번째 인덱스
+const [lastNum, setLastNum] = useState(20);
+```
+
+### FETCHING_TODOS_REQUEST과 함께 데이터로 1번의 데이터 보내기
+
+<p>후에 선언한 firstNum과 lastNum을 액션 함수의 data에 추가하여 전달합니다.</p>
+
+```tsx
+  useEffect(() => {
+    console.log("todos_request_start!");
+    dispatch({
+      type: FETCHING_TODOS_REQUEST,
+      data: {
+        first: firstNum,
+        last: lastNum,
+      },
+    });
+    updateNumber();
+  };
+
+  // data.fisrt , data.last 로 각각 state를 전달합니다.
+```
+
+### 리듀서 및 사가에서 1번 과정의 데이터에 대한 타입 선언하기
+
+<p>그렇다면 해당 request 액션에 argument를 추가 했으므로 📁/reducers/todos 에도 해당 내용의 타입을 적어줘야 겠죠?</p>
+
+```tsx
+case 1 : 기존의 FetchingTodosRequest 인터페이스
+
+export interface FetchingTodosRequest {
+  type: typeof FETCHING_TODOS_REQUEST;
+}
+
+------------------------------------------
+
+case 2 : 타입이 추가된 FetchingTodosRequest 인터페이스
+
+export interface FetchingTodosRequest {
+  type: typeof FETCHING_TODOS_REQUEST;
+  data: {
+    first: number;
+    last: number;
+  };
+}
+```
+
+<p>액션 생성 함수에도 같은 작업을 반복합니다.</p>
+
+```tsx
+case 1 : 기존의 FetchingTodosRequest
+
+// 리듀서 안에 들어갈 액션 타입에 대한 액션 생성 함수 정의
+
+export const fetchingToddsRequest = (): FetchingTodosRequest => ({
+  type: FETCHING_TODOS_REQUEST,
+});
+
+------------------------------------------
+
+case 2 : 타입이 추가된 FetchingTodosRequest
+
+export const fetchingToddsRequest = (data: {first: number; last: number;}): FetchingTodosRequest => ({
+  type: FETCHING_TODOS_REQUEST,
+  data,
+});
+```
+
+<p>📁/sagas/todos에도 타입 명시한 내용을 업데이트합니다.</p>
+
+```tsx
+async function fetchTodosAPI(data: { first: number; last: number }) {
+  try {
+    const response = await axios.get(API_URL);
+    // console.log("result.data: ", result.data.slice(1, 30));
+    const result = response.data.slice(data.first, data.last);
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+```
+
+```tsx
+function* fetchTodos(action: FetchingTodosRequest) {
+  try {
+    const result: resultType = yield call(fetchTodosAPI, action.data);
+    // action과 함께 data를 넣어주기 때문에 action.data를 추가하였습니다.
+    console.log("result 확인: ", result);
+    yield put({
+      type: FETCHING_TODOS_SUCCESS,
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: FETCHING_TODOS_FAILURE,
+      console: err.response,
+    });
+  }
+}
+```
+
+### 정상적으로 동작한다면 useState를 통해 상태값 업데이트하기
+
+<p>dispatch 액션이 정상 작동한 후에, useState로 관리하던 firstNum과 lastNum에 대한 상태를 업데이트 해줍니다.</p>
+
+```tsx
+const getAPI = () => {
+  console.log("todos_request_start!");
+  dispatch({
+    type: FETCHING_TODOS_REQUEST,
+    data: {
+      first: firstNum,
+      last: lastNum,
+    },
+  });
+  // 바로 setFirstNum을 적어줘도 정상 작동하지만, 코드의 가독성을 위해 updateNumber 함수를 만들어 따로 분리하였습니다.
+  updateNumber();
+};
+
+// useState로 받아오는 배열의 인덱스 추가
+const updateNumber = useCallback(() => {
+  setFirstNum((num) => num + 20);
+  setLastNum((num) => num + 20);
+}, []);
+```
+
+### 결과 확인하기
+
+<img src="./images/sagaTemplate3.gif" alt="sagaTemplate3">
+
+## 이 정도 준비가 되었다면 얼마든지 프로젝트를 진행해봐도 좋을 것 같습니다 😁
