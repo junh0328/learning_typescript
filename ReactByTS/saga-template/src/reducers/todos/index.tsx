@@ -27,6 +27,10 @@ export const FETCHING_TODOS_FAILURE = "FETCHING_TODOS_FAILURE" as const;
 // 액션에 대한 타입 정의;
 export interface FetchingTodosRequest {
   type: typeof FETCHING_TODOS_REQUEST;
+  data: {
+    first: number;
+    last: number;
+  };
 }
 
 export interface FetchingTodosSuccess {
@@ -42,8 +46,12 @@ export interface FetchingTodosFailure {
 
 // 리듀서 안에 들어갈 액션 타입에 대한 액션 생성 함수 정의
 
-export const fetchingToddsRequest = (): FetchingTodosRequest => ({
+export const fetchingToddsRequest = (data: {
+  first: number;
+  last: number;
+}): FetchingTodosRequest => ({
   type: FETCHING_TODOS_REQUEST,
+  data,
 });
 
 export const fetchingToddsSuccess = (

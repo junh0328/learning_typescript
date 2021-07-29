@@ -697,32 +697,202 @@ export type RootState = ReturnType<typeof rootReducer>;
 
 <p>이번에는 리덕스 미들웨어 중 리덕스사가에 타입스크립트를 적용해보도록 하겠습니다. 리덕스 사가에 타입스크립트를 적용하기에 앞서 리덕스-사가에 대한 지식이 부족하시다면 벨로퍼트님의<a href="https://react.vlpt.us/redux-middleware/10-redux-saga.html">리덕스 사가</a>를 정독 후에 이 글을 참고하시면 좋을 것 같습니다.</p>
 
-<p>큰 틀에서 실행 방법은 다음과 같습니다.</p>
+### 레퍼런스
 
-- 1.리듀서 설정하기
-- 1.1) 루트 리듀서에 해당 리듀서 combine 하기
-- 1.2) 액션 함수 만들기
-- 1.3) 액션 생성 함수 만들기
-- 1.4) initialState 에 초기값 설정하기
-- 1.5) 리듀서 만들기
-- 1.6) immer 라이브러리를 통해 불변성을 활용한 state 관리하기
-- 1.7) store 생성하고 루트 리듀서 적용하기
+<a href="https://www.gitmemory.com/issue/atlassian/react-beautiful-dnd/1245/481973419">emotion, props에 인터페이스를 통해 props 사전 타입 적용하기</a>
 
-- 2.redux-saga 설정
-- 2.1) rootSaga에 해당 사가 결합하기
-- 2.2) 액션 함수를 감지하는 함수 만들기
-- 2.3) 제너레이터를 통해 함수 실행하기
-- 2.4) 결과 값을 포함한 해당 액션과 데이터를 리듀서로 전달하기
-- 2.5) 스토어에 사가 미들웨어 적용하기
-- 2.6) saga 적용하기
+### 리덕스-사가 보일러플레이트 만들어보기
 
-- 3.컴포넌트에 액션 적용하고 결과 값 받기
-- 3.1) useSelector() 함수를 통해 reducer에서 관리할 초기값 전달받기
-- 3.2) useDispatch() 함수를 통해 액션 또는 액션 생성함수 실행하기
-- 3.3) 결과값 보기
+<p>팀 프로젝트를 새롭게 들어가면서, 타입스크립트를 기반으로 한 리덕스 리덕스 사가 미들웨어를 통해 상태관리를 하기로 결정되었습니다. 그에 따라 예전 팀 프로젝트 때 공부했던 내용을 바탕으로 보일러 플레이트를 만들어 보았습니다.</p>
 
-### 리듀서 설정하기
+<a href="https://github.com/junh0328/learning_typescript/commits?author=junh0328&since=2021-07-27&until=2021-07-28">리덕스-사가 보일러플레이트 작업 커밋 순으로 보기</a>
 
-### redux-saga 설정하기
+### 순서
 
-### 컴포넌트에 액션 적용하고 결과 값 받기
+```
+1. 프로젝트 초기화하기 (npx creat-react-app 프로젝트명 --template typescript)
+2. axios 라이브러리를 통해 더미 API 데이터 패칭 확인 및 렌더링
+3. 리듀서, 리덕스, 리덕스 미들웨어 (redux-saga) 도입하기
+4. 결과 확인하기
+```
+
+<p>js 환경에서 충분히 익숙해졌기 때문에, 이번에는 타입과 관련된 내용을 주로 다뤄보겠습니다.</p>
+
+### 1.프로젝트 초기화하기
+
+<p>현재 next.js의 프레임워크를 사용하는 것이 아닌, CRA 환경에서 작업을 했기 때문에 다음과 같은 명령어를 입력하여 템플릿을 생성합니다.</p>
+
+```
+npx create-react-app name-of-app --template typescript
+```
+
+> <a href="https://github.com/typescript-cheatsheets/react">참고자료: typescript-cheatsheets/ react </a>
+
+### 2.axios 라이브러리를 통해 더미 API 데이터 패칭 확인 및 렌더링
+
+<p>먼저 기본적으로 데이터를 어떻게 불러올 지 생각해야 합니다. 기본적으로 axios로 불러오려고 하는 API는 다음과 같습니다.</p>
+
+```
+https://jsonplaceholder.typicode.com/todos
+```
+
+```js
+[
+  {
+    userId: 1,
+    id: 1,
+    title: "delectus aut autem",
+    completed: false,
+  },
+  {
+    userId: 1,
+    id: 2,
+    title: "quis ut nam facilis et officia qui",
+    completed: false,
+  },
+  {
+    userId: 1,
+    id: 3,
+    title: "fugiat veniam minus",
+    completed: false,
+  },
+  {
+    userId: 1,
+    id: 4,
+    title: "et porro tempora",
+    completed: true,
+  },
+];
+```
+
+<p>위와 같은 방식으로 약 200개의 객체 배열로 존재하고 있습니다. 저는 여기서 버튼을 클릭했을 때, 해당 데이터를 불러와서 useState에 저장하고 이를 고차함수인 map 함수를 통해 렌더링하는 방식을 택했습니다.</p>
+
+<p>자바스크립트 환경과 타입스크립트 환경에서 가장 큰 차이점이라고 하면, 데이터에 대한 타입을 명시해줘야 한다는 것입니다. 우리가 받아오는 데이터의 프로퍼티에는 각각 타입이 존재합니다.</p>
+
+```js
+userId: 1; // number
+id: 4; // number
+title: "et porro tempora"; // string
+completed: true; // boolean
+```
+
+<p>이에 맞춰서 해당 데이터의 타입을 명시할 todoType이라는 타입을 선언해주었습니다.</p>
+
+```js
+export type todoType = {
+  completed: boolean,
+  id: number,
+  title: string,
+  userId: number,
+};
+```
+
+<p>해당 todoType을 바탕으로 데이터를 불러오는 로직을 작성하면 아래와 같습니다.</p>
+
+> 🌟 코드의 가독성을 위해 스타일링에 관련된 내용은 제거된 상태입니다.<br/>
+> 🌟 스타일링을 포함한 내용을 깃허브에 올려 놓았습니다.
+
+```tsx
+
+📁 /src/pages/Main
+
+import axios from "axios";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import DataForm from "../../components/DataForm";
+import HeaderMain from "../../components/HeaderMain";
+import { todoType } from "../../types";
+import { MainWrapper } from "./style";
+
+function Main() {
+  const [datas, setDatas] = useState<todoType[]>([]);
+
+  const API_URL = `https://jsonplaceholder.typicode.com/todos`;
+
+  useEffect(() => {
+    if (datas.length) console.log(datas);
+  }, [datas]);
+
+  const getAPI = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const result = await axios.get(API_URL);
+      // console.log("result.data: ", result.data.slice(1, 30));
+      setDatas(result.data.slice(1, 30));
+    },
+    [API_URL]
+  );
+
+  return (
+    <MainWrapper>
+      <HeaderMain />
+      <button onClick={getAPI} >
+        Fetching Data!
+      </button>
+      <DataForm datas={datas} />
+    </MainWrapper>
+  );
+}
+
+export default Main;
+```
+
+<p>button의 onClick 이벤트 시에, getAPI라는 함수를 호출합니다. getAPI는 axios를 통해 우리가 사전에 데이터를 받기로한 API와 연결되어 있습니다. 반환받는 결과값을 result에 저장하고 정확히 의도대로 넘어오는지 확인하기 위해 console.log로 결과값을 찍어보았습니다.</p>
+
+<p>후에 useState로 관리되고 있는데 datas 빈 배열에 우리가 axios를 통해 넘겨받은 결과값을 우리의 의도대로 저장하기 위해 setDatas를 사용합니다.</p>
+
+```js
+setDatas(result.data.slice(1, 30));
+```
+
+<p>Array.prototype.slice() 메서드를 통해 우리는 200개나 되는 배열 중 일부를 뽑아서 저장할 수 있게 되었습니다. 이제 저장된 datas를 고차함수 map을 통해 렌더링하기 위해 해당 작업을 담당하는 컴포넌트인 &lt;DataForm&gt;에 props로 전달해주었습니다.</p>
+
+```tsx
+📁 /src/components/DataForm
+
+import React from "react";
+import { todoType } from "../../types";
+
+type Props = {
+  datas: todoType[] | undefined;
+};
+
+function DataForm(props: Props) {
+  const { datas } = props;
+
+  return (
+    <div>
+      {datas &&
+        datas.map((data) => (
+          <div key={data.id}>
+            <p>userId: {data.userId}</p>
+            <p>title: {data.title}</p>
+          </div>
+        ))}
+    </div>
+  );
+}
+
+export default DataForm;
+```
+
+<p>우리는 Pages/Main 이라는 상위 디렉토리에서 하위 컴포넌트 (components/DataForm) 으로 props를 상속했기 때문에 하위 컴포넌트에서도 props에 대한 타입을 정의해줘야 합니다. 이 개념은 기존 js 환경에서 다룬 prop-types와 유사하다고 생각하시면 될 것 같습니다. 따라서 넘겨 받는 props에 대한 타입을 <b>Props</b>라고 정의하였습니다.</p>
+
+```js
+type Props = {
+  datas: todoType[] | undefined, // 사전에 만들었던 todoType의 배열을 그대로 사용하기 때문에 import 하여 사용합니다.
+};
+
+/* todoType은 다음과 같습니다. */
+type todoType = {
+  completed: boolean,
+  id: number,
+  title: string,
+  userId: number,
+};
+```
+
+<p>해당 데이터를 원활하게 매핑했다면, 이미 반은 성공하신 것입니다.</p>
+
+### 3.리듀서, 리덕스, 리덕스 미들웨어 (redux-saga) 도입하기
+
+### 4.결과 확인하기
