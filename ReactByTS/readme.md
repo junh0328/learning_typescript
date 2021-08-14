@@ -14,6 +14,8 @@
 - [redux-thunk](#-redux-thunk)
 - [redux-saga](#-redux-saga)
 
+- [social-login](#-social-login)
+
 ## 📍 todolist
 
 ```tsx
@@ -1390,3 +1392,201 @@ const updateNumber = useCallback(() => {
 <img src="./images/sagaTemplate3.gif" alt="sagaTemplate3">
 
 ## 이 정도 준비가 되었다면 얼마든지 프로젝트를 진행해봐도 좋을 것 같습니다 😁
+
+## 📍 social login
+
+<p>이번에 학습한 내용은 타입스크립트와 next.js 프레임워크 환경에서 소셜 로그인을 적용하는 방법입니다.</p>
+
+> <a href="https://github.com/Doong-Ji/cola-map/pull/42">전에 만들었던 참고 로직 보기 (카카오로 로그인)</a>
+
+<p>대략적으로 순서를 보자면 다음과 같습니다</p>
+
+```
+① 카카오 또는 네이버 등의 해당하는 어플리케이션 기능 등록
+② public에 sdk 등록하기
+③ 환경 변수에 키값 등록하기
+④ sdk릁 통해 로그인 로직 구현하기
+⑤ 결과 확인하기
+```
+
+### ① 카카오 또는 네이버 등의 해당하는 어플리케이션 기능 등록
+
+이미지를 통해 간단하게 나열해보도록 하겠습니다
+
+> <a href="https://developers.kakao.com/">'카카오 developers' </a>에서 애플리케이션을 추가한 후 키를 발급 받아야 합니다.
+
+### 📍 로그인 후에 내어플리케이션 클릭
+
+<img src="./images/1.png" alt="1">
+
+### 📍 어플리케이션 추가
+
+<img src="./images/2.png" alt="2">
+
+### 📍 앱 설정 > 플랫폼 > 웹 사이트 도메인 추가
+
+<img src="./images/3.png" alt="3">
+
+### 📍 JavaScript 키 복사
+
+<img src="./images/4.png" alt="4">
+
+<p>여기서 생성했던 JavaScript 키를 환경 변수에 등록하고 전역으로 관리합니다.</p>
+
+### ② public에 sdk 등록하기
+
+<p>리액트의 CRA 환경과 next.js 프레임워크의 차이가 있습니다. <br/>
+① CRA 환경에서는 📁 public/index.html 에 우리가 작성한 코드가 렌더링되는 방식이었습니다. <br/>
+② Next.js 환경에서는 SSR을 구현하기 위해 서버에서 정적으로 파일을 만들어주기 때문에 퍼블릭 폴더와 해당되는 index.html이라는 파일이 존재하지 않습니다.</p>
+
+<p>따라서 기존에 public/index.html에 &lt;script&gt; ... &lt;/script&gt; 로 넣어줬던 sdk 코드는 next 환경에서 pages/_app.tsx에 넣어줍니다.</p>
+
+```tsx
+📁 pages/_app.tsx
+
+import Head from 'next/head'
+
+...
+
+function App({ Component, pageProps }: AppProps) {
+  return (
+    <>
+      <Head>
+        <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+      </Head>
+      {GlobalStyles}
+      <div css={mainWrap}>
+        <Component {...pageProps} />
+      </div>
+    </>
+  );
+}
+...
+```
+
+<p>처음 해당 파일에는 프라그먼트 &lt;&gt;...&lt;/&gt; 만 존재하고 Head 컴포넌트가 없을 수 있습니다. 따라서 next/Head가 제공하는 Head를 불러와(import) 사용합니다.</p>
+
+### ③ 환경 변수에 키값 등록하기
+
+<p>Next.js 환경에서 SSR을 활용하여 환경 변수를 등록하기 위해서는 기존 방식과 차이점이 있습니다. 기존에는 <b>(REACT_APP_)</b>을 추가하여 process.env.REACT_APP_문자열 로 불러왔습니다.</p>
+
+```
+📁.env
+REACT_APP_문자열
+
+ex)
+REACT_APP_KAKAO_KEY=aaa18clakascnal119xamcsl
+```
+
+<p>하지만 Next 프레임워크를 사용 시에는 환경 변수를 어떠한 상황에서 사용하는지 폴더명부터 파일명까지 지정해줘야 합니다. 또한 기존의 <b>(REACT_APP_)</b>이 아닌 <b>(NEXT_PUBLIC_)</b>을 통해 연결해줍니다</p>
+
+> <a href="https://nextjs.org/docs/basic-features/environment-variables">공식 문서 환경 변수 설정 보기</a>
+
+```
+① 환경 변수 디렉토리명을 변경합니다 (.env.local)
+② REACT_APP 대신 NEXT_PUBLIC 을 사용합니다
+```
+
+```
+📁.env.local
+
+NEXT_PUBLIC_문자열
+
+ex)
+NEXT_PUBLIC_KAKAO_KEY=casc10cac8al38zcs
+```
+
+### ④ sdk를 통해 로그인 로직 구현하기
+
+<p>onclick 시에, 카카오에서 제공하는 sdk를 바탕으로 로직을 구성하였습니다.</p>
+
+```tsx
+ const kakaoLogin = () => {
+    Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_KEY}`)
+
+    Kakao.Auth.login({
+      /* scope는 카카오로 로그인에서 설정해줄 수 있습니다 */
+      scope: 'profile_nickname,  account_email',
+
+      success: function (authObj: any) {
+        console.log('authObj: ', authObj)
+        if (authObj.access_token) {
+          Kakao.cleanup()
+          console.log('Kakao.cleanup!-login')
+        }
+      },
+      fail: function (err: Error) {
+        console.log('에러', err)
+        alert('로그인실패!')
+        return
+      },
+    })
+  }
+
+...
+
+<button type="button" css={kakao} onClick={kakaoLogin}>
+  <img src="/images/login/kakao.svg" alt="카카오 로그인" />
+  카카오톡으로 시작하기
+</button>
+```
+
+<p>하지만 여기서 문제가 발생합니다.</p>
+
+<img width="500" src="./images/typeError.png" alt="타입에러">
+
+<br/>
+
+<p>카카오 객체를 제대로 받아오지 못하는 것입니다. 자바스크립트 환경에서는 암묵적 타입 변환을 제공하기 때문에 동적으로 생긴 타입을 자바스크립트 엔진이 판단하여 타입을 지정해줍니다. 하지만 타입스크립트 환경에서는 사용할 변수에 대한 정적인, 즉 사전에 변수에 대한 타입 선언이 필요합니다. 따라서 타입 선언과 Kakao 객체 선언을 추가해줍니다.</p>
+
+```tsx
+
+/*
+'Window & typeof globalThis' 형식에 'Kakao' 속성이 없습니다.
+에러를 대응하기 위해 global (node.js 환경의 전역 객체)에 Kakao에 대한 타입을 선언해주었습니다
+*/
+
+declare global {
+  interface Window {
+    Kakao: any
+  }
+}
+
+export default function AuthLogin() {
+    // 코드 작성
+    var { Kakao } = window
+
+    const kakaoLogin = () => {
+    Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_KEY}`)
+    ...
+```
+
+<p>그럼 결과를 확인해볼까요?</p>
+
+### ⑤ 결과 확인하기
+
+<img width="400" src="./images/windowUndefined.png" alt="windowUndefined"/>
+
+<p>새로운 오류인 window<b>(브라우저 환경에서의 전역(global) 객체)</b>가 정의되지 않았다는 오류가 발생합니다. 정확한 해설은 아니지만 저의 개인적인 생각으로는, Next.js 프레임워크는 서버-사이드 렌더링을 위한 프레임워크이기 때문에, 서버에서 사전에 넘겨주는 index 파일을 바탕으로 렌더링합니다. 따라서 브라우저 환경에서 필요한 window를 전달받기 전에 global 환경에서 해당 어플리케이션이 실행되는 것 같습니다.</p>
+
+<a href="https://www.google.com/search?q=window+is+not+defined+next&rlz=1C5CHFA_enKR920KR920&oq=wind&aqs=chrome.0.69i59l2j69i57j69i59l2j69i60l3.2932j0j7&sourceid=chrome&ie=UTF-8">구글링: window is not defined next</a>
+
+<p>구글링을 통해 찾아 본 결과 해결 방법은 window 객체가 undefined일 경우에 반응할 코드를 추가하는 것입니다.</p>
+
+```tsx
+export default function AuthLogin() {
+
+  // window 가 undefined 면, 내부 블록의 코드를 실행해줘
+    if (typeof window !== "undefined") {
+      var { Kakao } = window;
+    }
+    const kakaoLogin = () => {
+    Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_KEY}`)
+    ...
+```
+
+<p>이제 정말 정상적으로 실행이 됩니다</p>
+
+<img width="500" src="./images/5.png" alt="success"/>
+
+<p>로그인 과정을 통해 얻은 정보를 바탕으로 서버와 연동하여 멋진 서비스를 기획해보세요!</p>
