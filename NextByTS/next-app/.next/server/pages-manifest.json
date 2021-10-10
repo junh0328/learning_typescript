@@ -1,7 +1,12 @@
 {
+  "/404": "pages/404.html",
   "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/static/[name]": "pages/static/[name].js"
+  "/_error": "pages/_error.js",
+  "/": "pages/index.html",
+  "/static": "pages/static.js",
+  "/static/[name]": "pages/static/[name].js",
+  "/tomato": "pages/tomato.html",
+  "/users/[name]": "pages/users/[name].js",
+  "/vegetable/[name]": "pages/vegetable/[name].html"
 }
