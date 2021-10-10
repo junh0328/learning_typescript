@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-unfetch';
 import css from 'styled-jsx/css';
 import Profile from '../../components/Profile';
 import Repositories from '../../components/Repositories';
@@ -20,6 +19,8 @@ const name = ({ user, repos }) => {
   );
 };
 
+// <Link href={`/users/${userName}`}> 에서 userName으로 넘어오는 name을 getServerSideProps로 넘겨준다
+
 export const getServerSideProps = async ({ query }) => {
   // 초기 페이지를 1로 줬다
   const { name, page = '1' } = query;
@@ -28,8 +29,10 @@ export const getServerSideProps = async ({ query }) => {
     let repos;
 
     const userRes = await fetch(`https://api.github.com/users/${name}`, {
+      method: 'GET',
       headers: {
-        Authorization: 'Bearer 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',
+        'content-Type': 'application/json',
+        Authorization: 'Bearer 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',
       },
     });
     if (userRes.status === 200) {
@@ -41,8 +44,10 @@ export const getServerSideProps = async ({ query }) => {
     const reposRes = await fetch(
       `https://api.github.com/users/${name}/repos?sort=updated&page=${page}&per_page=10`,
       {
+        method: 'GET',
         headers: {
-          Authorization: 'Bearer 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',
+          'content-Type': 'application/json',
+          Authorization: 'Bearer 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',
         },
       }
     );
