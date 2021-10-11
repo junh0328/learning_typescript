@@ -32,7 +32,6 @@ export const getServerSideProps = async ({ query }) => {
       method: 'GET',
       headers: {
         'content-Type': 'application/json',
-        Authorization: 'Bearer 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',
       },
     });
     if (userRes.status === 200) {
@@ -47,7 +46,6 @@ export const getServerSideProps = async ({ query }) => {
         method: 'GET',
         headers: {
           'content-Type': 'application/json',
-          Authorization: 'Bearer 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',
         },
       }
     );
@@ -65,3 +63,5 @@ export const getServerSideProps = async ({ query }) => {
 };
 
 export default name;
+
+// https://github.com/settings/tokens
