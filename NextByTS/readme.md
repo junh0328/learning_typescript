@@ -1,11 +1,20 @@
 # 🔥 넥스트 프레임워크에 타입스크립트 적용하기
 
-## 🔥 들어가기 앞서
+## 목차
+
+- [Next 를 쓰는 이유 🔥](#Next-를-쓰는-이유)
+- [프로젝트 초기화하기 🔥](#프로젝트-초기화하기)
+- [eslint 및 prettier 설정하기 🔥](#eslint-prettier-설정하기)
+- [next의 라우팅 적용하기 🔥](#라우팅-적용하기)
+- [서버시이드 렌더링을 사용하여 페이지네이션이 가능한 깃허브 클론하기 🔥](#서버시이드-렌더링을-사용하여-페이지네이션이-가능한-깃허브-클론하기)
+- [next 추가 설정, 페이지 및 폴더 🔥](#next-추가-기본-설정하기)
+
+## 들어가기 앞서
 
 - SPA의 SSR, SEO와 관련된 문제를 해결하기 위해 Next.js를 많은 기업에서 사용하는 추세입니다
 - 앞서 배웠던 React by Ts를 통해 typescript의 정적 타이핑에 대해서 어느정도 숙지한 상태에서 보는 것을 추천합니다!
 
-## 🔥 Next 를 쓰는 이유
+## Next 를 쓰는 이유
 
 ### 사전 렌더링 및 서버 사이드 렌더링
 
@@ -37,7 +46,7 @@ Next 개발 환경에서는 코드 변경 사항이 저장되면 응용 프로�
 
 ### styled-jsx 지원
 
-## 🔥 초기화하기
+## 프로젝트 초기화하기
 
 - next 프레임워크를 사용하는 방법은 크게 두가지입니다
 
@@ -57,7 +66,7 @@ cd 프로젝트명
 npm init -y 를 통해 package.json 직접 초기화
 ```
 
-## 🔥 eslint/ prettier 설정하기
+## eslint prettier 설정하기
 
 ```
 $ eslint --init
@@ -145,7 +154,7 @@ module.exports = {
 };
 ```
 
-## 🔥 라우팅 적용하기
+## 라우팅 적용하기
 
 Next 프레임워크를 사용시에는 파일기반의 네비게이션 구조를 갖추기 때문에 따로 react-router 설정을 해 줄 필요가 없습니다.
 
@@ -254,7 +263,7 @@ export default index;
 
 해당 정보를 받아줄 수 있는 동적인 페이지가 존재한다면 위처럼 내가 입력하는 e.target.value를 바탕으로 한 동적인 페이지를 생성할 수 있습니다
 
-## 서버시이드 렌더링을 통해 페이지네이션이 가능한 깃허브 클론하기 🔥
+## 서버시이드 렌더링을 사용하여 페이지네이션이 가능한 깃허브 클론하기
 
 [레포지토리 보기](https://github.com/junh0328/learning_typescript/tree/master/NextByTS/next-app)
 
@@ -640,3 +649,138 @@ Next 버튼을 누름과 동시에 Link에 현재 기본 매개변수로 받은 
 앞서 `<Profile>` 컴포넌트 단에서 처리했던 것처럼 getServerSideProps를 통해 넘겨받은 자료가 없을 경우가 있을 수도 있습니다.
 
 따라서, props 넘겨받은 객체가 비어있을 때는 null을 반환하여 불필요한 에러가 생기지 않도록 처리해주었습니다.
+
+## next 추가 기본 설정하기
+
+Next 프레임워크는 프레임워크에서 제공하는 특별한 폴더와 파일들이 있습니다.
+
+- 📁 public: 정적 파일을 저장하여 제공
+- 📁 pages: 폴더 구조를 이용하여 경로를 설정
+
+📁 pages 폴더 안에는 넥스트에서 중요한 역할을 하는 특별한 파일들이 있습니다.
+
+- 📙_app.jsx (tsx)
+- 📙_document.jsx (tsx)
+- 📙_error.jsx (tsx)
+- 📙404.jsx (tsx)
+
+### 📙_app.jsx
+
+App 컴포넌트는 모든 페이지의 공통 페이지 역할을 합니다.
+
+App 컴포넌트를 이용하여 모든 페이지들을 초기화하여 다음과 같은 역할을 할 수 있습니다.
+
+1. 페이지들의 공통된 레이아웃
+2. 페이지를 탐색할 때 상태 유지
+3. 추가 데이터를 페이지에 주입
+4. 글로벌 CSS 추가
+
+```jsx
+📁 pages/_app.jsx
+
+import Header from '../components/Header';
+
+const MyApp = ({ Component, pageProps }) => {
+  return (
+    <>
+      <Header />
+      <Component {...pageProps} />
+      <style jsx global>
+        {`
+          body {
+            margin: 0;
+          }
+        `}
+      </style>
+    </>
+  );
+};
+
+export default MyApp;
+```
+
+- 사전에 만들어둔 Header 컴포넌트를 \_app.jsx 파일에 추가한다면, 모든 파일에서 공통적으로 Header를 갖게 됩니다
+- next에서 기본적으로 제공하는 style jsx에 global을 추가하면 전역으로 적용되는 글로벌 스타일을 지정할 수 있습니다.
+
+### 📙_document.jsx
+
+사용자 정의 Document는 일반적으로 응용 프로그램 `<HTML>` 및 `<body>` 태그를 보강하는데 사용됩니다.
+
+도큐먼트를 이용하여 `<title>`, `<description>`, `<meta>` 등 프로젝트의 정보를 제공하는 HTML 코드를 작성할 수 있고,
+
+폰트나 외부 api, cdn 등을 불러오도록 할 수 있습니다.
+
+또한 CSS-in-JS의 서버 사이드 렌더링을 위한 설정을 할 때 사용합니다.
+
+```jsx
+📁 pages/_document.jsx
+
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+
+class MyDocument extends Document {
+  render() {
+    return (
+      <Html lang="ko">
+        <Head>
+          <meta name="title" content="깃허브 레포지토리" />
+          <meta name="description" content="깃허브 레퍼지토리 리스트입니다" />
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&display=swap&subset=korean"
+            rel="stylesheet"
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default MyDocument;
+```
+
+Head 태그에 meta 태그를 추가하여 해당 프로젝트에 대한 정보를 추가할 수 있고, 구글 폰트 등에서 제공하는 폰트를 link 로 불러와 전역으로 적용시킬 수 있습니다.
+
+해당 링크를 구글 폰트 등에서 다운받아 \_document.jsx에 적용한 뒤 , \_app.jsx에 해당 폰트를 사용하겠다는 선언을 하면 됩니다.
+
+```jsx
+📁 pages/_app.jsx
+
+...
+<style jsx global>
+  {`
+    body {
+      margin: 0;
+      font-family: Noto Sans, Noto Sans KR; >> 구글 폰트에서 다운 받은 폰트 추가
+    }
+  `}
+</style>
+```
+
+### 📙_error.jsx
+
+넥스트에서는 빌드 된 프로덕션 환경에서 에러가 발생한다면 에러 페이지로 넘어가게 됩니다.
+
+```jsx
+📁 pages/_error.jsx
+
+const Error = () => {
+  return (
+    <div>
+      <p>에러가 발생했습니다</p>
+    </div>
+  );
+};
+
+export default Error;
+```
+
+따로 라우팅 경로를 설정하지 않더라도, 빌드 된 프로덕트 환경에서 에러가 발생한다면 에러 페이지로 자동적으로 넘어갑니다.
+
+추가적으로 에러 상황에 따라서 500, 404 등도 추가할 수 있습니다

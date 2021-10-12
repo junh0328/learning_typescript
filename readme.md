@@ -1,6 +1,7 @@
 ## 👉🏼 Next is ....
 
-<a href="./ReactByTS/readme.md">리액트에 타입스크립트 한 방울 넣기</a>
+- <a href="./ReactByTS/readme.md">리액트에 타입스크립트 추가하기 🔥</a>
+- <a href="./NextByTS/readme.md">넥스트에 타입스크립트 추가하기 🔥</a>
 
 ## 👉🏼 참고자료
 
