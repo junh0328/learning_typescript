@@ -42,10 +42,6 @@ const style = css`
 `;
 
 const Profile = ({ user }) => {
-  useEffect(() => {
-    if (user) console.log('user:', user);
-  }, [user]);
-
   if (!user) {
     return null;
   }

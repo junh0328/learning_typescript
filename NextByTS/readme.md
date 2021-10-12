@@ -29,7 +29,7 @@ Next 개발 환경에서는 코드 변경 사항이 저장되면 응용 프로�
 
 리액트에서는 라우트를 위해서 'react-router'라는 라이브러리를 사용하여 라우팅 설정을 해주어야 합니다.
 
-그로 인해 ㅔㅍ이지의 경로에 대하여 직접 설정을 해주어야 하였습니다.
+그로 인해 페이지의 경로에 대하여 직접 설정을 해주어야 하였습니다.
 
 하지만 넥스트는 파일 시스템 기반 라우팅을 사용합니다.
 
@@ -253,3 +253,390 @@ export default index;
 <img src="./images/1.gif" alt="객체로 라우팅">
 
 해당 정보를 받아줄 수 있는 동적인 페이지가 존재한다면 위처럼 내가 입력하는 e.target.value를 바탕으로 한 동적인 페이지를 생성할 수 있습니다
+
+## 서버시이드 렌더링을 통해 페이지네이션이 가능한 깃허브 클론하기 🔥
+
+[레포지토리 보기](https://github.com/junh0328/learning_typescript/tree/master/NextByTS/next-app)
+
+Next 프레임 워크를 사용하는 이유는 앞서 배운 것처럼 리액트를 사용했을 때는 적용하기 힘든 검색 엔진 최적화 (SEO), 타입스크립트 지원, 코드 스플리팅, 파일 기반의 네비게이션 기능을 사용할 수 있기 때문입니다.
+
+Next에서 가장 중요하다고 볼 수 있는 사전 렌더링(pre-render) 기능에 대해서 공부하면서, 이를 적용하여 깃허브 프로필 페이지를 클론하는 과정을 통해 학습해 보겠습니다.
+
+<!-- Next에는 두 가지 형태의 사전 렌더링이 존재합니다.
+
+1. 정적 생성 (SSG) : next build (빌드) 시에 페이지를 HTML로 만들어 요청 시 제공합니다.
+2. 서버 사이드 렌더링 (SSR) : 페이지 요청 시 서버 사이드 렌더링을 통하여 HTML을 제공합니다.
+
+SSG, Static Site Generation은 말 그대로 정적 사이트 생성입니다.
+
+Build 타임 때 (next build를 했을 때) 정적인 HTML 파일들이 서버에 셍성되는 것을 의미합니다.
+
+그러므로 유저가 페이지를 요청했을 때 이미 생성된 HTML만 반환하면 되므로, 이 HTML들은 재사용할 수 있습니다.
+
+이미 생성된 파일이 있기에 다른 유저가 같은 url로 요청했을 때 어떠한 작업도 하지않고 HTML만 반환하면 되므로 응답속도 (초기 렌더링 속도)가 매우 빠르다.
+
+SSG 시에, ① 외부 데이터를 필요로 하지 않는다면, 넥스트는 빌드 시에 페이지를 렌더링하여 요청시마다 제공하게 됩니다.
+
+② 외부 데이터를 필요로 한다면 서버 사이드 렌더링을 통하여 외부 데이터를 이용하여 렌더링을 한 후 HTML을 제공하게 됩니다.
+
+이때 서버 사이드 렌더링에 대하여 넥스트는 옵션을 제공합니다. -->
+
+### 📁 폴더 구조
+
+현재 레포지토리는 아래와 같은 구조로 구성되어 있습니다.
+
+```
+📁 components
+
+- Header
+- Profile
+- Repositories
+
+📁 pages
+- 📁 user (다이나믹 라우팅을 위한 페이지)
+  - [name].jsx
+- index
+```
+
+### 🔥 start
+
+index 페이지에 접근하여 next/link의 Link 기능을 통해 우리가 입력한 아이디를 바탕으로 동적 라우팅을 진행합니다.
+
+```jsx
+📁 pages/index.jsx
+...
+
+const index = () => {
+  const [userName, setUserName] = useState("");
+
+  return (
+    <>
+      <br />
+      <div>
+        <label>
+          username
+          <input
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </label>
+        <p>{userName} 깃허브 검색하기</p>
+        <Link href={`/users/${userName}`}>
+          <a>검색하기</a>
+        </Link>
+      </div>
+    </>
+  );
+};
+
+export default index;
+```
+
+`<Link href={`/users/${userName}`}>` 를 통해 useState로 관리하고 있는 userName을 쿼리문으로 하여금 `📁 user/[name].jsx` 에서 state인 userName을 받아줍니다.
+
+```jsx
+📁 user/[name].jsx
+
+// 서버사이드 렌더링 부분
+
+...
+
+export const getServerSideProps = async ({ query }) => {
+  // ① 초기 페이지를 1로 줬다
+  const { name, page = '1' } = query;
+  try {
+    let user;
+    let repos;
+
+    // ②
+    const userRes = await fetch(`https://api.github.com/users/${name}`, {
+      method: 'GET',
+      headers: {
+        'content-Type': 'application/json',
+      },
+    });
+    if (userRes.status === 200) {
+
+      // ③
+      user = await userRes.json();
+    } else {
+      throw Error(userRes.statusText);
+    }
+
+    // ②
+    const reposRes = await fetch(
+      `https://api.github.com/users/${name}/repos?sort=updated&page=${page}&per_page=10`,
+      {
+        method: 'GET',
+        headers: {
+          'content-Type': 'application/json',
+        },
+      }
+    );
+    if (reposRes.status === 200) {
+
+      // ③
+      repos = await reposRes.json();
+    } else {
+      throw Error(userRes.statusText);
+    }
+    // ④
+    return { props: { user, repos } };
+  } catch (e) {
+    console.log(e);
+    return { props: {} };
+  }
+};
+
+
+```
+
+### ①
+
+window.query 즉, 쿼리 객체 안에 들어있는 우리가 지어준 `[name]` 을 기반으로 한 name을 구조분해 할당을 통해 추출합니다.
+
+page는 기본적으로 초기 렌더링 시에는 들어있지 않지만, 기본값을 1로 해서 넘겨줍니다.
+
+레포지토리를 10개씩 받아오게 되는데 다음 10개를 불러오거나, 이전 10개를 불러오기 위해 필요합니다.
+
+### ②
+
+```
+https://api.github.com/users/${name}
+```
+
+해당 URL은 깃허브에서 제공하는 유저 정보를 불러올 수 있는 API입니다. name은 쿼리문으로 받아온 정보를 넣어줍니다.
+
+```
+https://api.github.com/users/${name}/repos?sort=updated&page=${page}&per_page=10
+```
+
+해당 URL은 깃허브에서 제공하는 유저가 생성한 레포지토리 정보를 불러오는 API입니다. page 별, 몇 개의 레포지토리를 불러올 지 설정이 가능합니다.
+
+### ③
+
+SSR을 실행할 때 해당 API를 통해 결과물로 담을 userRes, reposRes 라는 변수를 만들어 HTTP 요청을 통해 넘겨받은 정보는 Response 객체에 담겨 전달되는 형식이기 때문에 이를 우리가 흔히 아는 data 구조로 사용하기 위해서 `Response.json()` 메서드를 사용하여 복호화해줍니다.
+
+### ④
+
+마지막으로 복호화된 데이터를 props에 객체형식으로 담아 리턴해주면, getServerSideProps 진행 시에 서버쪽에서 해줘야 하는 사전 작업들이 끝나게 됩니다.
+
+```jsx
+📁 user/[name].jsx
+
+...
+
+const name = ({ user, repos }) => {
+  return (
+    <div className="user-contents-wrapper">
+      <Profile user={user} />
+      <Repositories user={user} repos={repos} />
+      <style jsx>{style}</style>
+    </div>
+  );
+};
+```
+
+이렇게 getServerSideProps 를 통해 props로 리턴받은 객체 user와 repos를 컴포넌트로 분리한 `<Profile>`과 `<Repositories>` 컴포넌트에게 각각 전달해줍니다.
+
+```jsx
+📁 components/Profile
+
+...
+
+const Profile = ({ user }) => {
+
+  // ①
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="profile-box">
+        <div className="profile-image-wrapper">
+          <img
+            className="profile-image"
+            src={user.avatar_url}
+            alt={`${user.name} 프로필 이미지`}
+          />
+        </div>
+        <h2 className="profile-username">{user.name}</h2>
+        <p className="profile-user-login">{user.login}</p>
+        <p className="profile-user-bio">{user.bio}</p>
+        <p className="profile-user-info">
+          <GoOrganization size={16} color="#6a737d" />
+          <span className="profile-user-info-text">
+            {/* ② */}
+            {user.company ? user.company : 'company 없음'}
+          </span>
+        </p>
+        <p className="profile-user-info">
+          <GoMail size={16} color="#6a737d" />
+          <span className="profile-user-info-text">
+            {/* ② */}
+            {user.email ? user.email : 'email 없음'}
+          </span>
+        </p>
+        <p className="profile-user-info">
+          <GoLocation size={16} color="#6a737d" />
+          <span className="profile-user-info-text">
+            {/* ② */}
+            {user.location ? user.location : 'location 없음'}
+          </span>
+        </p>
+      </div>
+
+      <style jsx>{style}</style>
+    </>
+  );
+};
+export default Profile;
+
+```
+
+### ①
+
+만약 user 객체의 값이 비어있다면, null을 반환하여 렌더링이되지 않도록 처리합니다.
+
+이미 getServerSideProps를 통해 `reposRes.status === 200` 일 때만 객체가 반환되도록 처리를 해 두었습니다.
+
+하지만 우리가 예상치 못한 상황에 발생할 수 있는 오류를 대비하여 user 객체의 값이 비어있을 경우를 대비해줍니다.
+
+나머지는 객체에 들어있는 property 들을 렌더링하는 구조입니다.
+
+### ②
+
+사용자가 location / email / company를 입력하지 않은 경우를 생각하여 조건부 렌더링을 적용해줍니다
+
+빈 값으로 처리한다면 최종 결과물이 의도와 달라질 수 있고, 어느 부분에서 어떤 데이터가 비어있는지 파악이 되지 않을 수 있습니다.
+
+```js
+📁 components/Repositories
+
+...
+
+const Repositories = ({ user, repos }) => {
+  // ①
+  const router = useRouter();
+  // ②
+  const { page = '1' } = router.query;
+
+  // ③
+  if (!user || !repos) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="repos-wrapper">
+        <div className="repos-header">
+          Repositoreis
+          <span className="repos-count">{user.public_repos}</span>
+        </div>
+        {user &&
+          repos &&
+          repos.map((repo) => (
+            <div key={repo.id} className="repository-wrapper">
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://github.com/${user.login}/${repo.name}`}
+              >
+                <h2 className="repository-name">{repo.name}</h2>
+              </a>
+              <p className="repository-description">{repo.description}</p>
+              <p className="repository-language">
+                {repo.language}
+                <span className="repository-updated-at">
+                  {formatDistance(new Date(repo.updated_at), new Date(), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </p>
+            </div>
+          ))}
+        <div className="repository-pagination">
+          {/* ④ */}
+          <Link href={`/users/${user.login}?page=${Number(page) - 1}`}>
+            <a>
+              {/* ⑥ */}
+              <button type="button" disabled={page && page === '1'}>
+                Previous
+              </button>
+            </a>
+          </Link>
+          {/* ⑤ */}
+          <Link
+            href={`/users/${user.login}?page=${!page ? '2' : Number(page) + 1}`}
+          >
+            <a>
+              <button type="button" disabled={repos.length > 10}>
+                Next
+              </button>
+            </a>
+          </Link>
+        </div>
+        <style jsx>{style}</style>
+      </div>
+    </>
+  );
+};
+
+export default Repositories;
+
+```
+
+### ①
+
+next 에서 지원하는 `import { useRouter } from 'next/router';` 라우터를 사용합니다
+
+useRouter() 에 사전에 구성된 router 메서드를 사용하여 props로 전달받지 않아도 해당 페이지에서 쿼리문을 캐치할 수 있습니다.
+
+### ②, ④, ⑤
+
+```js
+const { page = "1" } = router.query;
+```
+
+router.query에 들어있는 page 를 사용합니다.
+
+풀어 쓰지 않는다면 const page = router.query.page 가 될 것 입니다.
+
+여기서 처음 렌더링시에 Link href로 초기 페이지를 넘겨주지 않기 때문에 우선 매개변수에 기본값을 설정해주었습니다.
+
+④ 와 ⑤에서 볼 수 있듯이, 첫 번째 렌더링되는 페이지가 아닐 경우에는 page를 같이 넘겨주게 됩니다
+
+**예를 들어 초기 페이지 1을 가진 상태에서 Next 에 해당되는 Link를 클릭했다고 가정해 봅시다**
+
+index 페이지에서 처음 주소를 입력한다면 다음과 같은 URL이 입력될 것입니다
+
+```
+http://localhost:3000/users/junh0328
+```
+
+page는 첫 페이지이기 때문에 매개변수에 기본값을 설정해서 1을 넣어주었고 다음 페이지로 넘어갈 때부터 page를 포함한 요청을 보내게 됩니다
+
+`📁 components/Repositories`에서 Next 버튼을 본다면, page가 아직 router.query를 통해 넘겨받지 못했기 때문에 '2'로 갈 수밖에 없습니다.
+
+```js
+  <Link href={`/users/${user.login}?page=${!page ? '2' : Number(page) + 1}`}>
+```
+
+Next를 눌러볼까요?
+
+```
+http://localhost:3000/users/junh0328?page=2
+```
+
+Next 버튼을 누름과 동시에 Link에 현재 기본 매개변수로 받은 page에 1 더한 값인 page=2 로 라우팅 요청을 보냈습니다.
+
+따라서 주소창에서는 page가 기본 매개변수 1이 아닌, 2가 들어가게 됩니다
+
+이때 부터는 Previous 버튼 또한 사용할 수 있게 됩니다
+
+### ③
+
+앞서 `<Profile>` 컴포넌트 단에서 처리했던 것처럼 getServerSideProps를 통해 넘겨받은 자료가 없을 경우가 있을 수도 있습니다.
+
+따라서, props 넘겨받은 객체가 비어있을 때는 null을 반환하여 불필요한 에러가 생기지 않도록 처리해주었습니다.
