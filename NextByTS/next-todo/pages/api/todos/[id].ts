@@ -4,6 +4,9 @@ import Data from "../../../lib/data";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "PATCH") {
     try {
+      // 📁pages/api/todos/[id].ts
+      // curl --request PATCH http://localhost:3000/api/todos/1
+      // req.query >>> { id: '1' }
       const todoId = Number(req.query.id);
       const todo = Data.todo.exist({ id: todoId });
       if (!todo) {
