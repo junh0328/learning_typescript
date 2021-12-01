@@ -8,6 +8,10 @@
 - [next의 라우팅 적용하기 🔥](#라우팅-적용하기)
 - [서버시이드 렌더링을 사용하여 페이지네이션이 가능한 깃허브 클론하기 🔥](#서버시이드-렌더링을-사용하여-페이지네이션이-가능한-깃허브-클론하기)
 - [next 추가 설정, 페이지 및 폴더 🔥](#next-추가-기본-설정하기)
+- [스타일드 컴포넌트, SSR 적용하기 🔥](#스타일드-컴포넌트-SSR-적용하기)
+- [스타일드 컴포넌트로 글로벌 스타일 적용하기 🔥](#스타일드-컴포넌트로-글로벌-스타일-적용하기)
+- [번외, 이모션 SSR 적용하기 🔥](#번외-이모션-SSR-적용하기)
+- [axios 설정하기 🔥](#axios-설정하기)
 
 ## 들어가기 앞서
 
@@ -784,3 +788,218 @@ export default Error;
 따로 라우팅 경로를 설정하지 않더라도, 빌드 된 프로덕트 환경에서 에러가 발생한다면 에러 페이지로 자동적으로 넘어갑니다.
 
 추가적으로 에러 상황에 따라서 500, 404 등도 추가할 수 있습니다
+
+# 스타일드 컴포넌트 SSR 적용하기
+
+예제 코드를 따라 `_document.tsx`를 확장하고, 서버사이드 렌더링 과정에서 `<head>`에 스타일링을 넣는 과정을 추가합니다.
+
+추가로 서버 사이드 렌더링 때 필요한 바벨 플러그인을 추가해줍니다.
+
+- 📁 pages/\_document.tsx
+- 📁 .babelrc (루트 경로)
+
+```tsx
+📁 pages/_document.tsx
+
+import Document, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext,
+} from "next/document";
+import { ServerStyleSheet } from "styled-components";
+
+class MyDocument extends Document {
+  static async getInitialProps(ctx: DocumentContext) {
+    const sheet = new ServerStyleSheet();
+    const originalRenderPage = ctx.renderPage;
+    try {
+      ctx.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(<App {...props} />),
+        });
+      const initialProps = await Document.getInitialProps(ctx);
+      return {
+        ...initialProps,
+        styles: (
+          <>
+            {initialProps.styles}
+            {sheet.getStyleElement()}
+          </>
+        ),
+      };
+    } finally {
+      sheet.seal();
+    }
+  }
+
+  render() {
+    return (
+      <Html>
+        <Head>
+          {/* <Head> 태그 사이에 구글 폰트에서 받은 폰트를 넣어줌으로써 폰트를 SSR로 적용 가능합니다.*/}
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&display=swap&subset=korean"
+            rel="stylesheet"
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default MyDocument;
+```
+
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "styled-components",
+      {
+        "ssr": true
+      }
+    ],
+    "inline-react-svg"
+  ]
+}
+```
+
+# 스타일드 컴포넌트로 글로벌 스타일 적용하기
+
+스타일드 컴포넌트를 통해 글로벌 스타일을 적용하기 위해서는 `_app.tsx`, `styles/GlobalStyles.ts` 파일에 작업이 필요합니다.
+
+- 📁 `_app.tsx`
+- 📁 `styles/GlobalStyles.ts`
+
+## 📁 `styles/GlobalStyles.ts`
+
+기본적으로 적용된 스타일에 대한 리셋(초기화 효과를 주기 위해 styled-reset을 사용합니다
+
+```
+yarn add styled-reset / npm install styled-reset
+```
+
+📁 `styles/GlobalStyles.ts` 파일에 아래와 같이 적용해준다면 기본 태그들에 대해 스타일링 초기화가 가능합니다.
+
+```tsx
+📁 `styles/GlobalStyles.ts`
+import { createGlobalStyle, css } from "styled-components";
+import reset from "styled-reset";
+
+const globalStyle = css`
+  ${reset};
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Noto Sans, Noto Sans KR;
+  }
+`;
+
+const GlobalStyle = createGlobalStyle`
+    ${globalStyle}
+
+`;
+
+export default GlobalStyle;
+
+```
+
+## 📁 `_app.tsx`
+
+초기화 된 스타일링을 전역으로 적용해주기 위해 `_app.tsx` 파일에 GlobalStyle 모듈을 넣어줍니다.
+
+```tsx
+import { AppProps } from "next/app";
+import GlobalStyle from "../styles/GlobalStyle";
+
+const app = ({ Component, pageProps }: AppProps) => {
+  return (
+    <>
+      <GlobalStyle />
+      <Component {...pageProps} />
+    </>
+  );
+};
+
+export default app;
+```
+
+# 번외 이모션 SSR 적용하기
+
+<img width="500" src="./images/emotion.png" alt="이모션 SSR"/>
+
+이모션에서 서버 사이드 렌더링을 사용하기 위해서는 바닐라 js 환경에서는 v (10.x.x ) 이하에서만 사용해야 합니다.
+
+그 이후 버전은 Next.js 프레임워크를 사용했을 때 만 적용됩니다.
+
+[에제코드 바로가기 🔥](https://github.com/vercel/next.js/tree/master/examples/with-emotion-vanilla)
+
+# axios 설정하기
+
+api 경로에 매번 (http://localhost:3000) 을 적어 사용하는 것은 번거로운 일이 될 것입니다.
+
+따라서 axios의 기본 경로를 설정하여 이를 방지하도록 하겠습니다.
+
+📁 lib/api/index.ts
+
+경로에 파일을 만들어 axios의 기본값들을 설정하도록 하겠습니다.
+
+```tsx
+import Axios from "axios";
+
+const axios = Axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+export default axios;
+```
+
+Axios 모듈에서 제공하는 `create()` 메서드를 사용해서 axios 초기 요청 시에 필요한 값들을 설정해주었습니다.
+
+`cmd + 클릭` 을 통해서 📁node_modules에 설치한 axios 모듈의 내부로 들어갈 수 있습니다.
+
+<img width="400" src="./images/axios1.png" alt="axios1">
+
+`create` 이외에도 `all`, `spread` 등의 메서드를 볼 수 있습니다.
+
+<img width="400" src="./images/axios2.png" alt="axios2">
+
+`create` 를 통해 설정할 수 있는 파라미터들이 들어있습니다.
+
+기본적으로 `baseURL`을 설정했지만, `withCredentials`, `headers` 등을 자주 사용합니다.
+
+## axios와 try catch
+
+이전 코드리뷰를 통해 리뷰를 받았던 사항인데, 예를 들어 todos 배열을 불러오는 경우 어떠한 오류로 인해 try { } 내부로 들어오지 못할 경우도 있습니다.
+
+따라서 해당 경우를 위해 catch{ } 로 넘어가더라도 빈 배열을 리턴해줘야 렌더링시 에 생기는 문제를 1차적으로 막을 수 있습니다.
+
+```tsx
+📁 pages/index.tsx
+// 서버 사이드 렌더링 시에, 방어코드로 catch 에서 todos를 빈 배열로 반환하는 것을 처리해줘야 합니다.
+...
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const { data } = await getTodosAPI();
+    return { props: { todos: data } };
+  } catch (e) {
+    console.log(e);
+    return { props: { todos: [] } };
+  }
+};
+```
