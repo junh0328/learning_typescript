@@ -6,6 +6,7 @@ import { TodoType } from "../types/todo";
 import TrashCanIcon from "../public/statics/svg/trash_can.svg";
 import CheckMarkIcon from "../public/statics/svg/check_mark.svg";
 import { checkTodoAPI, deleteTodoAPI } from "../lib/api/todo";
+import AddTodo from "./AddTodo";
 
 const Container = styled.div`
   width: 100%;
@@ -200,7 +201,13 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
   const checkTodo = async (id: number) => {
     try {
       await checkTodoAPI(id);
-      //* 체크를 적용하는 방법 3(data를 local로 저장하여 사용하기)
+      // * 체크를 적용하는 방법 1(데이터 다시 받기)
+      // router.reload()
+
+      // * 체크를 적용하는 방법 2(데이터 다시 받기)
+      // router.push('/')
+
+      //* 체크를 적용하는 방법 3(data를 local(useState)로 저장하여 사용하기)
       const newTodos = localTodos.map((todo) => {
         if (todo.id === id) {
           return { ...todo, checked: !todo.checked };
@@ -232,6 +239,7 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
         <p className="todo-list-last-todo">
           남은TODO<span>{localTodos.length}개</span>
         </p>
+        <AddTodo />
         <div className="todo-list-header-colors">
           {Object.keys(todoColorNums).map((color, index) => (
             <div className="todo-list-header-color-num" key={index}>

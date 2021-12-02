@@ -1,4 +1,5 @@
 import { AppProps } from "next/app";
+import Footer from "../components/Footer";
 import Header from "../components/Header";
 import GlobalStyle from "../styles/GlobalStyle";
 
@@ -8,6 +9,7 @@ const app = ({ Component, pageProps }: AppProps) => {
       <GlobalStyle />
       <Header />
       <Component {...pageProps} />
+      <Footer />
     </>
   );
 };

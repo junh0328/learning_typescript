@@ -95,7 +95,8 @@ const AddTodo: React.FC = () => {
       }
       await addTodoAPI({ text, color: selectedColor });
       console.log("추가했습니다.");
-      router.push("/");
+      router.reload();
+      // router.push("/");
     } catch (e) {
       console.log(e);
     }
