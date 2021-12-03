@@ -12,6 +12,7 @@
 - [스타일드 컴포넌트로 글로벌 스타일 적용하기 🔥](#스타일드-컴포넌트로-글로벌-스타일-적용하기)
 - [번외, 이모션 SSR 적용하기 🔥](#번외-이모션-SSR-적용하기)
 - [axios 설정하기 🔥](#axios-설정하기)
+- [리덕스 적용하기 🔥](#리덕스-적용하기)
 
 ## 들어가기 앞서
 
@@ -1003,3 +1004,28 @@ export const getServerSideProps: GetServerSideProps = async () => {
   }
 };
 ```
+
+# 리덕스 적용하기
+
+```
+https://github.com/vercel/next.js/tree/canary/examples/with-redux-wrapper
+```
+
+해당 링크를 통해 next.js redux 예제를 바탕으로 next-todo 프로젝트에 리덕스를 적용할 수 있습니다.
+
+```
+$ yarn add redux react-redux next-redux-wrapper redux-devtools-extension
+
+$ yarn add @types/react-redux -D
+```
+
+`ducks 패턴`을 이용하여 리덕스를 만듭니다.
+
+`ducks 패턴`은 파일을 구조 중심이 아닌 기능 중심으로 파일을 나누는 것입니다.
+
+`ducks 패턴`을 사용하게 되면 코드가 직관적이고 읽기 쉽게 사용할 수 있습니다. `ducks 패턴`의 규칙은 다음과 같습니다.
+
+1. 항상 `reducer()`란 이름의 함수를 export default 해야 합니다
+2. 항상 모듈의 action 생성자들을 함수형태로 export 해야 합니다
+3. 항상 npm-module-or-app/reducer/ACTION_TYPE 형태의 action 타입을 가져야 합니다.
+4. 경우에 따라 action 타입들을 UPPERCASE_SNAKE_CASE로 export 할 수 있습니다. 만약 외부 reducer가 해당 action들이 발생하는지 계속 기다리거나, 재사용할 수 있는 라이브러리로 퍼블리싱할 경우에 말입니다
