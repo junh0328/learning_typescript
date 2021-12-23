@@ -1,5 +1,7 @@
 # NextJS Introduction
 
+# Chapter 1
+
 ## useRouter를 활용한 조건부 스타일링
 
 ```jsx
@@ -127,4 +129,67 @@ export default function App({ Component, pageProps }) {
   _app.js 페이지는 pages 폴더 내부에 들어있는 어떠한 파일보다 먼저 실행됩니다.
   매개변수로 받는 Component는 우리가 만든 about.js / index.js 등의 파일을 불러오게 됩니다.
 */
+```
+
+# Chapter 2
+
+## Next/Head 패턴화 하기
+
+```jsx
+import Head from "next/head";
+
+export default function Seo({ title }) {
+  return (
+    <Head>
+      <title>{title} | Next Movies</title>
+    </Head>
+  );
+}
+```
+
+```jsx
+// case 1: Seo >> About
+import Seo from "../components/Seo";
+
+export default function Potato() {
+  return (
+    <div>
+      <Seo title="About" />
+      <h1>About</h1>
+    </div>
+  );
+}
+```
+
+```jsx
+// case 2: Seo >> Home
+import Seo from "../components/Seo";
+
+export default function Home() {
+  return (
+    <div>
+      <Seo title="Home" />
+      <h1 className="active">Hello </h1>
+    </div>
+  );
+}
+```
+
+## Next js next.config.js 를 통해 redirect 하기
+
+`source`, `destination` 프로퍼티를 사용하여 이전 블로그의 주소를 새로 이전한 블로그의 주소로 변환해줄 수 있습니다.
+
+```js
+module.exports = {
+  reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/old-blog/:path*",
+        destination: "/new-blog/:path*",
+        permanent: false,
+      },
+    ];
+  },
+};
 ```
